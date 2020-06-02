@@ -6,7 +6,10 @@ import (
 )
 
 func main() {
-	xlog.Info(1)
-	xlog.Error(2)
+	xlog.Debug(1)
+	xlog.Info(2)
+	xlog.Warning(3)
 	xlog.Error(g.Map{"1": 123123, "222": "abc"})
+	xlog.Fatal(4)
+	xlog.Panic(5)
 }
