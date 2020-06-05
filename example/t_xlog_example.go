@@ -5,11 +5,17 @@ import (
 	"github.com/zut/x/xlog"
 )
 
-func main() {
-	xlog.Debug(1)
-	xlog.Info(2)
+func f2() {
+	xlog.Debug(1, "skip1")
+	xlog.Info(2, "skip5")
 	xlog.Warning(3)
 	xlog.Error(g.Map{"1": 123123, "222": "abc"})
 	xlog.Fatal(4)
 	xlog.Panic(5)
+}
+func f1() {
+	f2()
+}
+func main() {
+	f1()
 }

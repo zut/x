@@ -15,9 +15,17 @@ import (
 
 func (l *Logger) printToWriterColor(now time.Time, std io.Writer, buffer *bytes.Buffer) {
 	s := gstr.Replace(buffer.String(), "\n", " ")
+	skipStr, _ := gregex.MatchString(`skip(\d+) $`, s)
+	skip := g.SliceInt{}
+	if len(skipStr) > 1 {
+		skip = append(skip, gconv.Int(skipStr[1]))
+		s, _ = gregex.ReplaceString(`skip\d+ $`, "", s)
+	} else {
+		s, _ = gregex.ReplaceString(` $`, "", s)
+	}
 	s, _ = gregex.ReplaceString(` Stack: \d+\. .*$`, "", s)
 	//s = s + strings.Repeat(" ", 10) + l.GetStackColor() + "\n"
-	s = fmt.Sprintf("%-80s %s\n", s, l.GetStackColor())
+	s = fmt.Sprintf("%-80s %s\n", s, l.GetStackColor(skip...))
 	//fmt.Println(l.GetStackColor())
 	if gregex.IsMatchString(` \[DEBU\] `, s) {
 		s = color.White(s)
