@@ -15,13 +15,13 @@ import (
 
 func (l *Logger) printToWriterColor(now time.Time, std io.Writer, buffer *bytes.Buffer) {
 	s := gstr.Replace(buffer.String(), "\n", " ")
-	skipStr, _ := gregex.MatchString(`skip(\d+) $`, s)
+	skipStr, _ := gregex.MatchString(`Skip(\d+) $`, s)
 	skip := g.SliceInt{}
 	if len(skipStr) > 1 {
 		skip = append(skip, gconv.Int(skipStr[1]))
-		s, _ = gregex.ReplaceString(`skip\d+ $`, "", s)
+		s, _ = gregex.ReplaceString(`\s*Skip\d+\s*$`, "", s)
 	} else {
-		s, _ = gregex.ReplaceString(` $`, "", s)
+		s, _ = gregex.ReplaceString(`\s{1,}$`, "", s)
 	}
 	s, _ = gregex.ReplaceString(` Stack: \d+\. .*$`, "", s)
 	//s = s + strings.Repeat(" ", 10) + l.GetStackColor() + "\n"
