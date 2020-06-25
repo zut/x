@@ -7,7 +7,7 @@ import (
 
 func f2() {
 	xlog.Debug(1, "Skip1")
-	xlog.Info(2, "Skip5")
+	xlog.Info(2, "Skip2")
 	xlog.Warning(3)
 	xlog.Error(g.Map{"1": 123123, "222": "abc"})
 	xlog.Fatal(4)

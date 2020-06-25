@@ -29,16 +29,22 @@ func (l *Logger) printToWriterColor(now time.Time, std io.Writer, buffer *bytes.
 	//fmt.Println(l.GetStackColor())
 	if gregex.IsMatchString(` \[DEBU\] `, s) {
 		s = color.White(s)
+		s = gstr.Replace(s, "[_n_]", "")
 	} else if gregex.IsMatchString(` \[INFO\] `, s) {
 		s = color.Green(s)
+		s = gstr.Replace(s, "[_n_]", "")
 	} else if gregex.IsMatchString(` \[WARN\] `, s) {
 		s = color.Yellow(s)
+		s = gstr.Replace(s, "[_n_]", "\n")
 	} else if gregex.IsMatchString(` \[ERRO\] `, s) {
 		s = color.Red(s)
+		s = gstr.Replace(s, "[_n_]", "\n")
 	} else if gregex.IsMatchString(` \[PANI\] `, s) {
 		s = color.Yellow(s, color.U, color.B)
+		s = gstr.Replace(s, "[_n_]", "\n")
 	} else if gregex.IsMatchString(` \[FATA\] `, s) {
 		s = color.Red(s, color.U, color.B)
+		s = gstr.Replace(s, "[_n_]", "\n")
 	}
 	if l.config.Writer == nil {
 		// Output content to disk file.
@@ -86,7 +92,7 @@ func (l *Logger) GetStackColor(skip ...int) string {
 		switch {
 		case n == 0:
 			s2 = append(s2, fmt.Sprintf("%s.%s %s ", aa[1], aa[2], aa[3]))
-		case n <= 2:
+		case n <= 5:
 			s2 = append(s2, fmt.Sprintf("%s.%s %s ", aa[1], aa[2], aa[3]))
 		}
 	}
@@ -94,7 +100,7 @@ func (l *Logger) GetStackColor(skip ...int) string {
 	//if err != nil {
 	//	return "GetStackColor:" + err.Error()
 	//}
-	rst := "< " + gstr.JoinAny(s2, " ")
+	rst := "< " + gstr.JoinAny(s2, " [_n_]")
 	//fmt.Println("rst:", rst)
 	return rst
 }
