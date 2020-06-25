@@ -80,7 +80,7 @@ func (l *Logger) GetStackColor(skip ...int) string {
 	//f, _ = gregex.ReplaceString(`^\d+\. +`, "", f)
 	s, _ = gregex.ReplaceString(` {2,}`, " ", s)
 	//fmt.Println(s)
-	//fmt.Println(f) 
+	//fmt.Println(f)
 	//f, _ = gregex.ReplaceString(`(\d+\. .*?[^/]+ /\S*/[^/]*:\d+) {5,}`, "$1 ", f)
 	//f, _ = gregex.ReplaceString(`(\d+)\. .*?([^/]+) /\S*/([^/]*:\d+) `, "$1 $2 $3 ", f)
 	ss, _ := gregex.MatchAllString(`(\d+)\. .*?([^/]+) /\S*/([^/]*:\d+) `, s)
