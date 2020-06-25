@@ -93,7 +93,7 @@ func (l *Logger) GetStackColor(skip ...int) string {
 		switch {
 		case n == 0:
 			s2 = append(s2, fmt.Sprintf("%s %s %s ", aa[1], className, aa[3]))
-		case n <= 5:
+		case n <= 2:
 			s2 = append(s2, fmt.Sprintf("%s %s %s ", aa[1], className, aa[3]))
 		}
 	}
