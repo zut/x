@@ -35,7 +35,7 @@ func (l *Logger) printToWriterColor(now time.Time, std io.Writer, buffer *bytes.
 		s = gstr.Replace(s, "[_n_]", "")
 	} else if gregex.IsMatchString(` \[WARN\] `, s) {
 		s = color.Yellow(s)
-		s = gstr.Replace(s, "[_n_]",  fmt.Sprintf("\n%-100s   ", ""))
+		s = gstr.Replace(s, "[_n_]", fmt.Sprintf("\n%-100s   ", ""))
 	} else if gregex.IsMatchString(` \[ERRO\] `, s) {
 		s = color.Red(s)
 		s = gstr.Replace(s, "[_n_]", fmt.Sprintf("\n%-100s   ", ""))
@@ -89,11 +89,12 @@ func (l *Logger) GetStackColor(skip ...int) string {
 		if !gregex.IsMatchString(`github.com/zut/`, aa[0]) {
 			continue
 		}
+		className, _ := gregex.ReplaceString(`^.+\.`, "", aa[2])
 		switch {
 		case n == 0:
-			s2 = append(s2, fmt.Sprintf("%s %s %s ", aa[1], aa[2], aa[3]))
+			s2 = append(s2, fmt.Sprintf("%s %s %s ", aa[1], className, aa[3]))
 		case n <= 5:
-			s2 = append(s2, fmt.Sprintf("%s %s %s ", aa[1], aa[2], aa[3]))
+			s2 = append(s2, fmt.Sprintf("%s %s %s ", aa[1], className, aa[3]))
 		}
 	}
 	//f, _ = gregex.ReplaceString(` /\S*/([^/]*:\d+) `, " $1 ", f)
