@@ -98,7 +98,7 @@ func (l *Logger) GetStackColor(skip ...int) string {
 		}
 	}
 	//f, _ = gregex.ReplaceString(` /\S*/([^/]*:\d+) `, " $1 ", f)
-	//if err != nil { 111
+	//if err != nil {
 	//	return "GetStackColor:" + err.Error()
 	//}
 	rst := "< " + gstr.JoinAny(s2, " [_n_]")
