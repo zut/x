@@ -9,10 +9,10 @@ package xlog
 import (
 	"errors"
 	"fmt"
-	intlog "github.com/labstack/gommon/log"
 	"github.com/gogf/gf/os/gfile"
 	"github.com/gogf/gf/util/gconv"
 	"github.com/gogf/gf/util/gutil"
+	intlog "github.com/labstack/gommon/log"
 	"io"
 	"strings"
 	"time"
@@ -27,6 +27,7 @@ type Config struct {
 	Level                int            // Output level.
 	Prefix               string         // Prefix string for every logging content.
 	StSkip               int            // Skip count for stack.
+	StLevel              int            // Skip count for stack.
 	StStatus             int            // Stack status(1: enabled - default; 0: disabled)
 	StFilter             string         // Stack string filter.
 	HeaderPrint          bool           `c:"header"` // Print header or not(true in default).
@@ -47,6 +48,7 @@ func DefaultConfig() Config {
 		Flags:               F_TIME_STD,
 		Level:               LEVEL_ALL,
 		StStatus:            1,
+		StLevel:             3,
 		HeaderPrint:         true,
 		StdoutPrint:         true,
 		LevelPrefixes:       make(map[int]string, len(defaultLevelPrefixes)),
