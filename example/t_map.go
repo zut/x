@@ -10,7 +10,7 @@ func main() {
 	s4 := g.Slice{1, 2, 3, 4, 5, 6, 7}
 	xlog.Info(s4[0:2])
 	xlog.Info(s4[2:4])
-	aMap := g.MapStrStr{"": "123"}
+	aMap := map[string]map[string]int{"d": {"": 1, "a": 2}}
 	if val, ok := aMap["11"]; !ok {
 		xlog.Info(val, ok)
 	} else {
@@ -21,4 +21,5 @@ func main() {
 	} else {
 		xlog.Info(val, ok)
 	}
+	xlog.Info(aMap["cddddd"]["c"]) // 0
 }
