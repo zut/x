@@ -48,6 +48,13 @@ func (l *Logger) printToWriterColor(now time.Time, std io.Writer, buffer *bytes.
 		s = color.Red(s, color.U, color.B)
 		s = gstr.Replace(s, "[_n_]", fmt.Sprintf("\n%-100s   ", ""))
 	}
+	if gregex.IsMatchString(`(\.go:\d+) +(\d\)\.)`,s){
+		s2, err := gregex.ReplaceString(`(\.go:\d+) +(\d\)\.)`, `$1[_n_]$2`, s)
+		if err == nil {
+			s = s2
+			s = gstr.Replace(s, "[_n_]", fmt.Sprintf("\n%-50s   ", ""))
+		}
+	}
 	if l.config.Writer == nil {
 		// Output content to disk file.
 		if l.config.Path != "" {

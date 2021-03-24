@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/os/glog"
 	"github.com/zut/x/xlog"
 )
 
 func f2() {
+	xlog.Warning("   2).  github.com/zut/t/api/reporter.gRb        /Users/d/Dropbox/go/src/github.com/zut/t/api/reporter/rDo.go:193    3).  github.com/zut/t/api/reporter.initRowStep1             /Users/d/Dropbox/go/src/github.com/zut/t/api/reporter/r3Row1.go:75    4).  github.com/zut/t/api/reporter.initRow           /Users/d/Dropbox/go/src/github.com/zut/t/api/reporter/r3Row1.go:20  ")
 	defer end()
 	xlog.Debug("111 Skip1")
 	xlog.Debug(1, "1 Skip1")
@@ -31,6 +31,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	glog.Info(1)
+	xlog.Info(1)
 	f1()
 }
