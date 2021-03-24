@@ -15,7 +15,7 @@ func f2() {
 	xlog.Warning(3)
 	xlog.Error(g.Map{"1": 123123, "222": "abc"})
 	//xlog.Panic(5)
-	//xlog.Fatal(4) // 没有 defer end
+	//xlog.Fatal(4) // 没有 defer end 123
 }
 func f1() {
 	f2()
