@@ -95,7 +95,7 @@ func (l *Logger) GetStackColor(skip ...int) string {
 	ss, _ := gregex.MatchAllString(`(\d+)\. .*?([^/]+) /\S*/([^/]*:\d+) `, s)
 	s2 := g.SliceStr{}
 	for n, aa := range ss {
-		if !gregex.IsMatchString(`github.com/zut/`, aa[0]) {
+		if !gregex.IsMatchString(`github.com/(zut|ab|tst)`, aa[0]) {
 			continue
 		}
 		className, _ := gregex.ReplaceString(`^.+\.`, "", aa[2])
