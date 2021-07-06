@@ -27,7 +27,7 @@ func (l *Logger) printToWriterColor(now time.Time, std io.Writer, buffer *bytes.
 	}
 	s, _ = gregex.ReplaceString(` Stack: \d+\. .*$`, "", s)
 	//s = s + strings.Repeat(" ", 10) + l.GetStackColor() + "\n"
-	s = fmt.Sprintf("%-100s %s\n", s, l.GetStackColor(skip...))
+	s = fmt.Sprintf("%-100s %s\n", s, l.GetStackColor(s, skip...))
 	//fmt.Println(l.GetStackColor())
 	if gregex.IsMatchString(` \[DEBU\] `, s) {
 		s = color.White(s)
@@ -75,7 +75,7 @@ func (l *Logger) printToWriterColor(now time.Time, std io.Writer, buffer *bytes.
 
 // GetStack returns the caller stack content,
 // the optional parameter <skip> specify the skipped stack offset from the end point.
-func (l *Logger) GetStackColor(skip ...int) string {
+func (l *Logger) GetStackColor(logStr string, skip ...int) string {
 	stackSkip := l.config.StSkip
 	if len(skip) > 0 {
 		stackSkip += skip[0]
@@ -95,7 +95,7 @@ func (l *Logger) GetStackColor(skip ...int) string {
 	ss, _ := gregex.MatchAllString(`(\d+)\. .*?([^/]+) /\S*/([^/]*:\d+) `, s)
 	s2 := g.SliceStr{}
 	stLevel := l.config.StLevel + 3
-	if gregex.IsMatchString(` \[(DEBU|INFO)`, s) {
+	if gregex.IsMatchString(` \[(DEBU|INFO)`, logStr) {
 		stLevel -= 3
 	}
 	for n, aa := range ss {
