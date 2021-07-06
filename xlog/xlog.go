@@ -48,7 +48,7 @@ func (l *Logger) printToWriterColor(now time.Time, std io.Writer, buffer *bytes.
 		s = color.Red(s, color.U, color.B)
 		s = gstr.Replace(s, "[_n_]", fmt.Sprintf("\n%-100s   ", ""))
 	}
-	if gregex.IsMatchString(`(\.go:\d+) +(\d+\)\.)`,s){
+	if gregex.IsMatchString(`(\.go:\d+) +(\d+\)\.)`, s) {
 		s2, err := gregex.ReplaceString(`(\.go:\d+) +(\d+\)\.)`, `$1[_n_]$2`, s)
 		if err == nil {
 			s = s2
@@ -94,6 +94,10 @@ func (l *Logger) GetStackColor(skip ...int) string {
 	//f, _ = gregex.ReplaceString(`(\d+)\. .*?([^/]+) /\S*/([^/]*:\d+) `, "$1 $2 $3 ", f)
 	ss, _ := gregex.MatchAllString(`(\d+)\. .*?([^/]+) /\S*/([^/]*:\d+) `, s)
 	s2 := g.SliceStr{}
+	stLevel := l.config.StLevel + 3
+	if gregex.IsMatchString(` \[(DEBU|INFO)`, s) {
+		stLevel -= 3
+	}
 	for n, aa := range ss {
 		if !gregex.IsMatchString(`github.com/(zut|ab|tst)`, aa[0]) {
 			continue
@@ -102,7 +106,7 @@ func (l *Logger) GetStackColor(skip ...int) string {
 		switch {
 		case n == 0:
 			s2 = append(s2, fmt.Sprintf("%s %s %s ", aa[1], className, aa[3]))
-		case n <= l.config.StLevel-1:
+		case n <= stLevel-1:
 			s2 = append(s2, fmt.Sprintf("%s %s %s ", aa[1], className, aa[3]))
 		}
 	}
