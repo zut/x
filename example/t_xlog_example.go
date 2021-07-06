@@ -25,7 +25,7 @@ func end() {
 }
 func main() {
 	err := xlog.SetConfigWithMap(g.Map{
-		"StLevel": 1,
+		"StLevel": 2,
 	})
 	if err != nil {
 		panic(err)
