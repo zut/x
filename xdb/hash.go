@@ -1,0 +1,332 @@
+package xdb
+
+import (
+	"fmt"
+	"github.com/gogf/gf/util/gconv"
+	"github.com/zut/x/xx"
+	"math"
+)
+
+func HClear(h string) error {
+	return Del(h)
+}
+
+func HDel(h, k string) error {
+	// 从 key 指定的哈希集中移除指定的域。在哈希集中不存在的域将被忽略。
+	// 如果 key 指定的哈希集不存在，它将被认为是一个空的哈希集，该命令将返回0。
+	c := Conn()
+	defer ConnClose(c)
+	return c.HDel(ctx, h, k).Err()
+}
+
+func HExists(h, k string) (bool, error) {
+	// 返回hash里面field是否存在
+	// true  hash里面包含该field。
+	// false hash里面不包含该field或key不存在。
+	c := Conn()
+	defer ConnClose(c)
+	return c.HExists(ctx, h, k).Result()
+}
+
+func HGet(h, k string) (v interface{}, err error) {
+	err = HGetTo(h, k, &v)
+	return
+}
+func HGetStr(h, k string) (v string, err error) {
+	err = HGetTo(h, k, &v)
+	return
+}
+
+func HGetAll(h string) (map[string]interface{}, error) {
+	c := Conn()
+	defer ConnClose(c)
+	kvm, err := c.HGetAll(ctx, h).Result()
+	if err != nil {
+		return nil, err
+	}
+	kvm2 := make(map[string]interface{}, len(kvm))
+	for k, v := range kvm {
+		v2, err := xx.Unpack(gconv.Bytes(v))
+		if err != nil {
+			return nil, err
+		}
+		kvm2[k] = v2
+	}
+	return kvm2, err
+}
+
+func HGetTo(h, k string, v interface{}) error {
+	xx.IsPointer(v)
+	c := Conn()
+	defer ConnClose(c)
+	str, err := c.HGet(ctx, h, k).Result()
+	if err != nil {
+		return err
+	}
+	return xx.UnpackTo(gconv.Bytes(str), &v)
+}
+func HIncrSet(h, k string, v int) (int, error) {
+	c := Conn()
+	defer ConnClose(c)
+	r, err := c.HSet(ctx, h, k, v).Result()
+	return gconv.Int(r), err
+}
+
+func HIncrGet(h, k string) (int, error) {
+	c := Conn()
+	defer ConnClose(c)
+	r, err := c.HGet(ctx, h, k).Result()
+	return gconv.Int(r), err
+}
+func HIncr(h, k string) (int, error) {
+	return HIncrBy(h, k, 1)
+}
+func HIncrBy(h, k string, v int) (int, error) {
+	// 1. 如果key不存在，操作之前，key就会被置为0。
+	// 2. 如果key的value类型错误或是个不能表示成数字 返回错误: ERR value is not an integer or out of range
+	c := Conn()
+	defer ConnClose(c)
+	r, err := c.HIncrBy(ctx, h, k, int64(v)).Result()
+	return int(r), err
+}
+
+func HIncrByFloat(key, field string, incr float64) (float64, error) {
+	// 为指定key的hash的field字段值执行float类型的increment加。
+	//  如果field不存在，则在执行该操作前设置为0.如果出现下列情况之一，则返回错误：field的值包含的类型错误(不是字符串)。
+	//  当前field或者increment不能解析为一个float类型。
+	//  此命令的确切行为与 IncrByFloat 命令相同，请参 IncrByFloat 命令获取更多信息。
+	// 返回值
+	//  bulk-string-reply： field执行increment加后的值
+	c := Conn()
+	defer ConnClose(c)
+	return c.HIncrByFloat(ctx, key, field, incr).Result()
+}
+
+func HIncrId(h, k string, digit int) (int, error) {
+	v, err := HIncrBy(h, k, 1)
+	if err != nil {
+		return v, err
+	}
+	//if decimals and v < 10 ** (decimals - 1):
+	//v = self.execute_command('zincr', c(name, 1), c(key, 1), 10 ** (decimals - 1))
+	if v < int(math.Pow10(digit-1)) {
+		v, err = HIncrBy(h, k, int(math.Pow10(digit-1))-v+1)
+	}
+	return v, err
+}
+
+func HKeys(h string) ([]string, error) {
+	// 返回 key 指定的哈希集中所有字段的名字。
+	// Keys 要注意, 二 HKeys是可以用的
+	c := Conn()
+	defer ConnClose(c)
+	return c.HKeys(ctx, h).Result()
+}
+
+//func HKeysPrefix(h, prefix string) ([]string, error) {
+//	// 返回 key 指定的哈希集中所有字段的名字。
+//	//kvm, _, err := HScan(h, 0, fmt.Sprintf("%v*", prefix), 1e6, true)
+//	//ks := xx.MapKeys(kvm)
+//	keys, err := HKeys(h)
+//	if err != nil {
+//		return nil, err
+//	}
+//	s := make([]string, 0)
+//	for _, k := range keys {
+//		if !gregex.IsMatchString(fmt.Sprintf("^%v", prefix), k) {
+//			continue
+//		}
+//		s = append(s, k)
+//	}
+//	return s, err
+//}
+
+func HKeysPrefix(h, prefix string) ([]string, error) {
+	// 返回 key 指定的哈希集中所有字段的名字。
+	kvm, _, err := HScan(h, 0, fmt.Sprintf("%v*", prefix), 1e6, true)
+	s := xx.MapKeys(kvm)
+	return s, err
+}
+
+func HLen(h string) (int, error) {
+	c := Conn()
+	defer ConnClose(c)
+	v, err := c.HLen(ctx, h).Result()
+	return gconv.Int(v), err
+}
+
+func HmDel(h string, ks []string) error {
+	if len(ks) == 0 {
+		return nil
+	}
+	c := Conn()
+	defer ConnClose(c)
+	return c.HDel(ctx, h, ks...).Err()
+}
+
+func HmDelByPrefix(h string, prefix string) error {
+	ks, err := HKeysPrefix(h, prefix)
+	if err != nil {
+		return err
+	}
+	if len(ks) == 0 {
+		return nil
+	}
+	c := Conn()
+	defer ConnClose(c)
+	return c.HDel(ctx, h, ks...).Err()
+}
+
+func HmGet(h string, ks []string) ([]interface{}, error) {
+	c := Conn()
+	defer ConnClose(c)
+	vsUnpack, err := c.HMGet(ctx, h, ks...).Result()
+	if err != nil {
+		return nil, err
+	}
+	vs := make([]interface{}, 0)
+	for _, v := range vsUnpack {
+		if v == nil {
+			continue
+		}
+		v2, err := xx.Unpack(gconv.Bytes(v))
+		if err != nil {
+			return nil, err
+		}
+		vs = append(vs, v2)
+	}
+	return vs, err
+}
+func HmGetTo(h string, ks []string, p interface{}) error {
+	xx.IsPointer(p)
+	if len(ks) == 0 {
+		return nil
+	}
+	vs, err := HmGet(h, ks)
+	if err != nil {
+		return err
+	}
+	return gconv.Structs(vs, p)
+}
+
+func HmSet(h string, kvm map[string]interface{}) error {
+	if len(kvm) == 0 {
+		return nil
+	}
+	kvmPack := make(map[string]interface{}, len(kvm))
+	for k, v := range kvm {
+		b, err := xx.Pack(v)
+		if err != nil {
+			return err
+		}
+		kvmPack[k] = b
+	}
+	c := Conn()
+	defer ConnClose(c)
+	return c.HMSet(ctx, h, kvmPack).Err()
+}
+
+func HScanNoUnpack(h string, cursor uint64, prefix string, count int) ([]string, uint64, error) {
+	c := Conn()
+	defer ConnClose(c)
+	kvList, cursorResp, err := c.HScan(ctx, h, cursor, fmt.Sprintf("%v*", prefix), int64(count)).Result()
+	return kvList, cursorResp, err
+}
+func HScan(h string, cursor uint64, match string, count int, onlyKeys ...bool) (map[string]interface{}, uint64, error) {
+	// kvm  cursor err
+	c := Conn()
+	defer ConnClose(c)
+	kvList, cursorResp, err := c.HScan(ctx, h, cursor, match, int64(count)).Result()
+	if err != nil {
+		return nil, 0, err
+	}
+	kvm := make(map[string]interface{}, 0)
+	onlyKey := xx.FirstBool(onlyKeys)
+	for i := 0; i < len(kvList); i += 2 {
+		if onlyKey {
+			kvm[kvList[i]] = 0
+		} else {
+			v, err := xx.Unpack(gconv.Bytes(kvList[i+1]))
+			if err != nil {
+				return nil, 0, err
+			}
+			kvm[kvList[i]] = v
+		}
+
+	}
+	return kvm, cursorResp, err
+}
+func HScanMatch(h string, match string) (map[string]interface{}, error) {
+	kvm, _, err := HScan(h, 0, match, 1e6)
+	return kvm, err
+}
+func HScanPrefix(h string, prefix string) (map[string]interface{}, error) {
+	kvm, _, err := HScan(h, 0, fmt.Sprintf("%v*", prefix), 1e6)
+	return kvm, err
+}
+
+func HSet(h, k string, v interface{}) error {
+	b, err := xx.Pack(v)
+	if err != nil {
+		return err
+	}
+	c := Conn()
+	defer ConnClose(c)
+	return c.HSet(ctx, h, k, b).Err()
+}
+
+func HValues(h string) ([]interface{}, error) {
+	c := Conn()
+	defer ConnClose(c)
+	vStrList, err := c.HVals(ctx, h).Result()
+	if err != nil {
+		return nil, err
+	}
+	vs := make([]interface{}, len(vStrList))
+	for n, vStr := range vStrList {
+		v, err := xx.Unpack(gconv.Bytes(vStr))
+		if err != nil {
+			return nil, err
+		}
+		vs[n] = v
+	}
+	return vs, err
+}
+
+func HValuesTo(h string, p interface{}) error {
+	xx.IsPointer(p)
+	vs, err := HValues(h)
+	if err != nil {
+		return err
+	}
+	return gconv.Structs(vs, p)
+}
+
+func HValuesToByPrefix(h, prefix string, p interface{}) error {
+	xx.IsPointer(p)
+	kvm, err := HScanPrefix(h, prefix)
+	if err != nil {
+		return err
+	}
+	vs := make([]interface{}, len(kvm))
+	n := 0
+	for _, v := range kvm {
+		vs[n] = v
+		n++
+	}
+	return gconv.Structs(vs, p)
+}
+
+func HValuesByPrefix(h, prefix string) ([]interface{}, error) {
+	kvm, err := HScanPrefix(h, prefix)
+	if err != nil {
+		return nil, err
+	}
+	vs := make([]interface{}, len(kvm))
+	n := 0
+	for _, v := range kvm {
+		vs[n] = v
+		n++
+	}
+	return vs, err
+}

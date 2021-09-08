@@ -94,9 +94,9 @@ func (l *Logger) GetStackColor(logStr string, skip ...int) string {
 	//f, _ = gregex.ReplaceString(`(\d+)\. .*?([^/]+) /\S*/([^/]*:\d+) `, "$1 $2 $3 ", f)
 	ss, _ := gregex.MatchAllString(`(\d+)\. .*?([^/]+) /\S*/([^/]*:\d+) `, s)
 	s2 := g.SliceStr{}
-	stLevel := l.config.StLevel + 3
-	if gregex.IsMatchString(` \[(DEBU|INFO)`, logStr) {
-		stLevel -= 3
+	stLevel := l.config.StLevel
+	if !gregex.IsMatchString(` \[(DEBU|INFO)`, logStr) {
+		stLevel = l.config.StLevel * 3
 	}
 	for n, aa := range ss {
 		if !gregex.IsMatchString(`github.com/(zut|ab|tst)`, aa[0]) {
