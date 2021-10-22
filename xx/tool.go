@@ -214,7 +214,7 @@ func joinSep(sep string, removeEmptyStr int, s ...interface{}) string {
 			continue
 		}
 		switch i.(type) {
-		case int:
+		case int, int64:
 		case float64:
 		case string:
 		default:
@@ -743,6 +743,16 @@ func RemoveDuplicateStr(s []string) []string {
 			allKeys[item] = true
 			s2 = append(s2, item)
 		}
+	}
+	return s2
+}
+func RemoveItemInST(s []string, removeItem string) []string {
+	var s2 []string
+	for _, item := range s {
+		if item == removeItem {
+			continue
+		}
+		s2 = append(s2, item)
 	}
 	return s2
 }

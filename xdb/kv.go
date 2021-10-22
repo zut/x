@@ -173,3 +173,32 @@ func TTL(k string) (time.Duration, error) {
 	defer ConnClose(c)
 	return c.TTL(ctx, k).Result()
 }
+
+// Type > string hash list set
+func Type(k string) (string, error) {
+	//如果key不存在或者已过期，返回 -2*time.Nanosecond
+	//如果key存在并且没有设置过期时间（永久有效），返回 -1*time.Nanosecond
+	c := Conn()
+	defer ConnClose(c)
+	return c.Type(ctx, k).Result()
+}
+
+func KeysIterator(prefix string) ([]string, error) {
+	// 包含 hash
+	c := Conn()
+	defer ConnClose(c)
+	iter := c.Scan(ctx, 0, fmt.Sprintf("%v*", prefix), 1e6).Iterator()
+	s := make([]string, 0)
+	n := 0
+	for iter.Next(ctx) {
+		n++
+		if n%2 == 0 {
+			continue
+		}
+		s = append(s, iter.Val())
+	}
+	if err := iter.Err(); err != nil {
+		return nil, err
+	}
+	return s, nil
+}

@@ -7,7 +7,11 @@ import (
 	"math"
 )
 
+func AddKK(h string) string {
+	return fmt.Sprintf("%v_keys", h)
+}
 func HClear(h string) error {
+	_ = Del(AddKK(h))
 	return Del(h)
 }
 
@@ -16,6 +20,7 @@ func HDel(h, k string) error {
 	// 如果 key 指定的哈希集不存在，它将被认为是一个空的哈希集，该命令将返回0。
 	c := Conn()
 	defer ConnClose(c)
+	_ = c.HDel(ctx, AddKK(h), k).Err()
 	return c.HDel(ctx, h, k).Err()
 }
 
@@ -120,32 +125,45 @@ func HKeys(h string) ([]string, error) {
 	// Keys 要注意, 二 HKeys是可以用的
 	c := Conn()
 	defer ConnClose(c)
-	return c.HKeys(ctx, h).Result()
+	s, err := c.HKeys(ctx, AddKK(h)).Result()
+	if err != nil {
+		return nil, err
+	}
+	size, err := HLen(h)
+	if err != nil {
+		return nil, err
+	}
+	if len(s) != size {
+		return nil, fmt.Errorf("HKeys.Error,Hash=%v.HLen=%v,HKeys=%v", h, size, len(s))
+	}
+	return s, nil
 }
-
-//func HKeysPrefix(h, prefix string) ([]string, error) {
-//	// 返回 key 指定的哈希集中所有字段的名字。
-//	//kvm, _, err := HScan(h, 0, fmt.Sprintf("%v*", prefix), 1e6, true)
-//	//ks := xx.MapKeys(kvm)
-//	keys, err := HKeys(h)
-//	if err != nil {
-//		return nil, err
-//	}
-//	s := make([]string, 0)
-//	for _, k := range keys {
-//		if !gregex.IsMatchString(fmt.Sprintf("^%v", prefix), k) {
-//			continue
-//		}
-//		s = append(s, k)
-//	}
-//	return s, err
-//}
 
 func HKeysPrefix(h, prefix string) ([]string, error) {
 	// 返回 key 指定的哈希集中所有字段的名字。
-	kvm, _, err := HScan(h, 0, fmt.Sprintf("%v*", prefix), 1e6, true)
+	kvm, _, err := HScan(AddKK(h), 0, fmt.Sprintf("%v*", prefix), 1e6, true)
 	s := xx.MapKeys(kvm)
 	return s, err
+}
+
+func HkeysPrefixIteratorOriginal(h, prefix string) ([]string, error) {
+	// 用 Iterator 能保证取出来, 但是数量越大,时间越多
+	c := Conn()
+	defer ConnClose(c)
+	iter := c.HScan(ctx, h, 0, fmt.Sprintf("%v*", prefix), 0).Iterator()
+	s := make([]string, 0)
+	n := 0
+	for iter.Next(ctx) {
+		n++
+		if n%2 == 0 {
+			continue
+		}
+		s = append(s, iter.Val())
+	}
+	if err := iter.Err(); err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 func HLen(h string) (int, error) {
@@ -161,6 +179,7 @@ func HmDel(h string, ks []string) error {
 	}
 	c := Conn()
 	defer ConnClose(c)
+	_ = c.HDel(ctx, AddKK(h), ks...).Err()
 	return c.HDel(ctx, h, ks...).Err()
 }
 
@@ -174,6 +193,7 @@ func HmDelByPrefix(h string, prefix string) error {
 	}
 	c := Conn()
 	defer ConnClose(c)
+	_ = c.HDel(ctx, AddKK(h), ks...).Err()
 	return c.HDel(ctx, h, ks...).Err()
 }
 
@@ -210,6 +230,25 @@ func HmGetTo(h string, ks []string, p interface{}) error {
 }
 
 func HmSet(h string, kvm map[string]interface{}) error {
+	if len(kvm) == 0 {
+		return nil
+	}
+	kvmPack := make(map[string]interface{}, len(kvm))
+	kvmPackForKeys := make(map[string]interface{}, len(kvm))
+	for k, v := range kvm {
+		b, err := xx.Pack(v)
+		if err != nil {
+			return err
+		}
+		kvmPack[k] = b
+		kvmPackForKeys[k] = 1
+	}
+	c := Conn()
+	defer ConnClose(c)
+	_ = c.HMSet(ctx, AddKK(h), kvmPackForKeys).Err()
+	return c.HMSet(ctx, h, kvmPack).Err()
+}
+func HmSetOriginal(h string, kvm map[string]interface{}) error {
 	if len(kvm) == 0 {
 		return nil
 	}
@@ -272,6 +311,7 @@ func HSet(h, k string, v interface{}) error {
 	}
 	c := Conn()
 	defer ConnClose(c)
+	_ = c.HSet(ctx, AddKK(h), k, 1)
 	return c.HSet(ctx, h, k, b).Err()
 }
 
