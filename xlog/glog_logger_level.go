@@ -7,7 +7,6 @@
 package xlog
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -75,7 +74,7 @@ func (l *Logger) SetLevelStr(levelStr string) error {
 	if level, ok := levelStringMap[strings.ToUpper(levelStr)]; ok {
 		l.config.Level = level
 	} else {
-		return errors.New(fmt.Sprintf(`invalid level string: %s`, levelStr))
+		return fmt.Errorf(`invalid level string: %s`, levelStr)
 	}
 	return nil
 }

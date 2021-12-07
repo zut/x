@@ -4,9 +4,15 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"image/png"
+	"math/rand"
+	"os"
+	"reflect"
+	"runtime"
+	"sort"
+	"time"
+
 	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/os/gcache"
-	"github.com/gogf/gf/os/gfile"
 	"github.com/gogf/gf/test/gtest"
 	"github.com/gogf/gf/text/gregex"
 	"github.com/gogf/gf/text/gstr"
@@ -15,61 +21,8 @@ import (
 	"github.com/vmihailenco/msgpack/v5"
 	"github.com/zut/x/vv"
 	"github.com/zut/x/xlog"
-	"image/png"
-	"math/rand"
-	"os"
-	"reflect"
-	"runtime"
-	"sort"
-	"time"
 )
 
-func T1(title ...interface{}) {
-	if len(title) == 0 {
-		title = append(title, "Time")
-	}
-	key := Str(title[0])
-	gcache.Set(key, time.Now(), 0) // 改成先进后出, 剥洋葱的方式, 嵌套多个
-}
-
-func T2(title ...interface{}) {
-	if len(title) == 0 {
-		title = append(title, "Time")
-	}
-	key := Str(title[0])
-	i, err := gcache.Get(key)
-	if err != nil {
-		xlog.Error(err)
-	}
-	elapsed := time.Now().Sub(gconv.Time(i))
-	xlog.Debug(key+" elapsed = ", elapsed, "Skip1")
-	//if len(gt) == 0 || time.Duration(gconv.Int(gt[0]*1e9)) <= elapsed {
-	//	xlog.Debug("T2 elapsed = ", elapsed, "Skip1")
-	//}
-}
-
-// Second
-func Sleep(s float64, show ...int) {
-	if FirstInt(show) == 1 {
-		xlog.Debug("Sleep", time.Nanosecond*time.Duration(int64(s*1e9)), "Skip1")
-	}
-	time.Sleep(time.Nanosecond * time.Duration(s*1e9))
-}
-func Zzz(title ...string) {
-	if !gfile.Exists("config/debug.Zzz") {
-		return
-	}
-	if len(title) > 0 {
-		xlog.Info(title, "Skip1")
-	}
-	xlog.Warning("Zzz ... Sleep ... Zzz", "Skip1")
-	xlog.Info("Continue \n  1.Yes \n 2.Stop", "Skip1")
-	i := 0
-	_, _ = fmt.Scanln(&i)
-	if i != 1 {
-		os.Exit(0)
-	}
-}
 func TryExpect() {
 	if err := recover(); err != nil {
 		//xlog.Errorf("%s: %s", e, debug.Stack()) // line 20
@@ -97,7 +50,7 @@ func Reverse(s S) S {
 	return d
 }
 
-func ReverseStr(s []string) []string {
+func ReverseST(s []string) []string {
 	d := make([]string, len(s))
 	copy(d, s)
 	last := len(s) - 1
@@ -231,7 +184,7 @@ func MustIn(i string, s ...string) error { //contains
 			return nil
 		}
 	}
-	return errors.New(fmt.Sprintf("ArgsError (%v) %v", i, s))
+	return fmt.Errorf("ArgsError (%v) %v", i, s)
 }
 func MustInInt(i int, s ...int) error { //contains
 	for _, a := range s {
@@ -239,7 +192,7 @@ func MustInInt(i int, s ...int) error { //contains
 			return nil
 		}
 	}
-	return errors.New(fmt.Sprintf("ArgsError (%v) %v", i, s))
+	return fmt.Errorf("ArgsError (%v) %v", i, s)
 }
 func MustInF64(i float64, s ...float64) error { //contains
 	for _, a := range s {
@@ -247,7 +200,7 @@ func MustInF64(i float64, s ...float64) error { //contains
 			return nil
 		}
 	}
-	return errors.New(fmt.Sprintf("ArgsError (%v) %v", i, s))
+	return fmt.Errorf("ArgsError (%v) %v", i, s)
 }
 func IdxST(i string, s []string) int {
 	for n, a := range s {
@@ -592,6 +545,15 @@ func GetST(s []string, p int) string {
 	}
 	return s[p]
 }
+func GetS(s []interface{}, p int) interface{} {
+	if p >= len(s) {
+		return ""
+	}
+	if p < 0 {
+		p = len(s) + p
+	}
+	return s[p]
+}
 func GetSF(s []float64, p int) float64 {
 	if p >= len(s) {
 		return 999999
@@ -735,6 +697,13 @@ func PrintMemUsage() {
 func bToMb(b uint64) uint64 {
 	return b / 1024 / 1024
 }
+func MergeStr(a, b []string) []string {
+	s := CopySStr(a)
+	s = append(s, b...)
+	s = RemoveDuplicateStr(s)
+	sort.Strings(s)
+	return s
+}
 func RemoveDuplicateStr(s []string) []string {
 	allKeys := make(map[string]bool)
 	var s2 []string
@@ -766,4 +735,12 @@ func RemoveDuplicateInt(intSlice []int) []int {
 		}
 	}
 	return s2
+}
+
+func Default(OriginalVaule, v string) string {
+	return IfStr(OriginalVaule == "", v, OriginalVaule)
+}
+
+func DefaultF64(OriginalVaule, v float64) float64 {
+	return IfF64(OriginalVaule == 0, v, OriginalVaule)
 }

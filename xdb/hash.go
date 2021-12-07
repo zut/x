@@ -2,20 +2,24 @@ package xdb
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/gogf/gf/util/gconv"
 	"github.com/zut/x/xx"
-	"math"
 )
 
-func AddKK(h string) string {
-	return fmt.Sprintf("%v_keys", h)
-}
 func HClear(h string) error {
+	if err := cEmpty(h); err != nil {
+		return err
+	}
 	_ = Del(AddKK(h))
 	return Del(h)
 }
 
 func HDel(h, k string) error {
+	if err := cEmpty(h, k); err != nil {
+		return err
+	}
 	// 从 key 指定的哈希集中移除指定的域。在哈希集中不存在的域将被忽略。
 	// 如果 key 指定的哈希集不存在，它将被认为是一个空的哈希集，该命令将返回0。
 	c := Conn()
@@ -25,6 +29,9 @@ func HDel(h, k string) error {
 }
 
 func HExists(h, k string) (bool, error) {
+	if err := cEmpty(h, k); err != nil {
+		return false, err
+	}
 	// 返回hash里面field是否存在
 	// true  hash里面包含该field。
 	// false hash里面不包含该field或key不存在。
@@ -43,6 +50,9 @@ func HGetStr(h, k string) (v string, err error) {
 }
 
 func HGetAll(h string) (map[string]interface{}, error) {
+	if err := cEmpty(h); err != nil {
+		return nil, err
+	}
 	c := Conn()
 	defer ConnClose(c)
 	kvm, err := c.HGetAll(ctx, h).Result()
@@ -61,6 +71,9 @@ func HGetAll(h string) (map[string]interface{}, error) {
 }
 
 func HGetTo(h, k string, v interface{}) error {
+	if err := cEmpty(h, k); err != nil {
+		return err
+	}
 	xx.IsPointer(v)
 	c := Conn()
 	defer ConnClose(c)
@@ -87,6 +100,9 @@ func HIncr(h, k string) (int, error) {
 	return HIncrBy(h, k, 1)
 }
 func HIncrBy(h, k string, v int) (int, error) {
+	if err := cEmpty(h, k); err != nil {
+		return 0, err
+	}
 	// 1. 如果key不存在，操作之前，key就会被置为0。
 	// 2. 如果key的value类型错误或是个不能表示成数字 返回错误: ERR value is not an integer or out of range
 	c := Conn()
@@ -108,6 +124,9 @@ func HIncrByFloat(key, field string, incr float64) (float64, error) {
 }
 
 func HIncrId(h, k string, digit int) (int, error) {
+	if err := cEmpty(h, k); err != nil {
+		return 0, err
+	}
 	v, err := HIncrBy(h, k, 1)
 	if err != nil {
 		return v, err
@@ -121,6 +140,9 @@ func HIncrId(h, k string, digit int) (int, error) {
 }
 
 func HKeys(h string) ([]string, error) {
+	if err := cEmpty(h); err != nil {
+		return nil, err
+	}
 	// 返回 key 指定的哈希集中所有字段的名字。
 	// Keys 要注意, 二 HKeys是可以用的
 	c := Conn()
@@ -140,6 +162,9 @@ func HKeys(h string) ([]string, error) {
 }
 
 func HKeysPrefix(h, prefix string) ([]string, error) {
+	if err := cEmpty(h, prefix); err != nil {
+		return nil, err
+	}
 	// 返回 key 指定的哈希集中所有字段的名字。
 	kvm, _, err := HScan(AddKK(h), 0, fmt.Sprintf("%v*", prefix), 1e6, true)
 	s := xx.MapKeys(kvm)
@@ -155,6 +180,9 @@ func HkeysPrefixIteratorOriginal(h, prefix string) ([]string, error) {
 	n := 0
 	for iter.Next(ctx) {
 		n++
+		if n%1000 == 0 {
+			fmt.Sprintln(n)
+		}
 		if n%2 == 0 {
 			continue
 		}
@@ -167,6 +195,9 @@ func HkeysPrefixIteratorOriginal(h, prefix string) ([]string, error) {
 }
 
 func HLen(h string) (int, error) {
+	if err := cEmpty(h); err != nil {
+		return 0, err
+	}
 	c := Conn()
 	defer ConnClose(c)
 	v, err := c.HLen(ctx, h).Result()
@@ -174,6 +205,9 @@ func HLen(h string) (int, error) {
 }
 
 func HmDel(h string, ks []string) error {
+	if err := cEmpty(h); err != nil {
+		return err
+	}
 	if len(ks) == 0 {
 		return nil
 	}
@@ -198,6 +232,9 @@ func HmDelByPrefix(h string, prefix string) error {
 }
 
 func HmGet(h string, ks []string) ([]interface{}, error) {
+	if err := cEmpty(h); err != nil {
+		return nil, err
+	}
 	c := Conn()
 	defer ConnClose(c)
 	vsUnpack, err := c.HMGet(ctx, h, ks...).Result()
@@ -218,6 +255,9 @@ func HmGet(h string, ks []string) ([]interface{}, error) {
 	return vs, err
 }
 func HmGetTo(h string, ks []string, p interface{}) error {
+	if err := cEmpty(h); err != nil {
+		return err
+	}
 	xx.IsPointer(p)
 	if len(ks) == 0 {
 		return nil
@@ -230,6 +270,9 @@ func HmGetTo(h string, ks []string, p interface{}) error {
 }
 
 func HmSet(h string, kvm map[string]interface{}) error {
+	if err := cEmpty(h); err != nil {
+		return err
+	}
 	if len(kvm) == 0 {
 		return nil
 	}
@@ -265,13 +308,16 @@ func HmSetOriginal(h string, kvm map[string]interface{}) error {
 	return c.HMSet(ctx, h, kvmPack).Err()
 }
 
-func HScanNoUnpack(h string, cursor uint64, prefix string, count int) ([]string, uint64, error) {
+func HScanNotUnpack(h string, cursor uint64, prefix string, count int) ([]string, uint64, error) {
 	c := Conn()
 	defer ConnClose(c)
 	kvList, cursorResp, err := c.HScan(ctx, h, cursor, fmt.Sprintf("%v*", prefix), int64(count)).Result()
 	return kvList, cursorResp, err
 }
 func HScan(h string, cursor uint64, match string, count int, onlyKeys ...bool) (map[string]interface{}, uint64, error) {
+	if err := cEmpty(h); err != nil {
+		return nil, 0, err
+	}
 	// kvm  cursor err
 	c := Conn()
 	defer ConnClose(c)
@@ -305,6 +351,9 @@ func HScanPrefix(h string, prefix string) (map[string]interface{}, error) {
 }
 
 func HSet(h, k string, v interface{}) error {
+	if err := cEmpty(h, k); err != nil {
+		return err
+	}
 	b, err := xx.Pack(v)
 	if err != nil {
 		return err
@@ -315,10 +364,17 @@ func HSet(h, k string, v interface{}) error {
 	return c.HSet(ctx, h, k, b).Err()
 }
 
-func HValues(h string) ([]interface{}, error) {
+func HValuesNotUnpack(h string) ([]string, error) {
+	if err := cEmpty(h); err != nil {
+		return nil, err
+	}
 	c := Conn()
 	defer ConnClose(c)
-	vStrList, err := c.HVals(ctx, h).Result()
+	return c.HVals(ctx, h).Result()
+}
+
+func HValues(h string) ([]interface{}, error) {
+	vStrList, err := HValuesNotUnpack(h)
 	if err != nil {
 		return nil, err
 	}
@@ -334,6 +390,9 @@ func HValues(h string) ([]interface{}, error) {
 }
 
 func HValuesTo(h string, p interface{}) error {
+	if err := cEmpty(h); err != nil {
+		return err
+	}
 	xx.IsPointer(p)
 	vs, err := HValues(h)
 	if err != nil {
@@ -343,6 +402,9 @@ func HValuesTo(h string, p interface{}) error {
 }
 
 func HValuesToByPrefix(h, prefix string, p interface{}) error {
+	if err := cEmpty(h, prefix); err != nil {
+		return err
+	}
 	xx.IsPointer(p)
 	kvm, err := HScanPrefix(h, prefix)
 	if err != nil {
@@ -358,6 +420,9 @@ func HValuesToByPrefix(h, prefix string, p interface{}) error {
 }
 
 func HValuesByPrefix(h, prefix string) ([]interface{}, error) {
+	if err := cEmpty(h, prefix); err != nil {
+		return nil, err
+	}
 	kvm, err := HScanPrefix(h, prefix)
 	if err != nil {
 		return nil, err

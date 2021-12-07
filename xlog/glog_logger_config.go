@@ -9,13 +9,14 @@ package xlog
 import (
 	"errors"
 	"fmt"
+	"io"
+	"strings"
+	"time"
+
 	"github.com/gogf/gf/os/gfile"
 	"github.com/gogf/gf/util/gconv"
 	"github.com/gogf/gf/util/gutil"
 	intlog "github.com/labstack/gommon/log"
-	"io"
-	"strings"
-	"time"
 )
 
 // Config is the configuration object for logger.
@@ -91,7 +92,7 @@ func (l *Logger) SetConfigWithMap(m map[string]interface{}) error {
 		if level, ok := levelStringMap[strings.ToUpper(gconv.String(levelValue))]; ok {
 			m[levelKey] = level
 		} else {
-			return errors.New(fmt.Sprintf(`invalid level string: %v`, levelValue))
+			return fmt.Errorf(`invalid level string: %v`, levelValue)
 		}
 	}
 	// Change string configuration to int value for file rotation size.
@@ -99,7 +100,7 @@ func (l *Logger) SetConfigWithMap(m map[string]interface{}) error {
 	if rotateSizeValue != nil {
 		m[rotateSizeKey] = gfile.StrToSize(gconv.String(rotateSizeValue))
 		if m[rotateSizeKey] == -1 {
-			return errors.New(fmt.Sprintf(`invalid rotate size: %v`, rotateSizeValue))
+			return fmt.Errorf(`invalid rotate size: %v`, rotateSizeValue)
 		}
 	}
 	err := gconv.Struct(m, &l.config)

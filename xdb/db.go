@@ -3,12 +3,13 @@ package xdb
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/util/gconv"
 	"github.com/zut/x/xlog"
 	"github.com/zut/x/xx"
-	"time"
 )
 
 var (
@@ -88,4 +89,18 @@ func FlushDB() {
 
 func toIntErr(i int64, err error) (int, error) {
 	return gconv.Int(i), err
+}
+
+func AddKK(h string) string {
+	return fmt.Sprintf("%v_keys", h)
+}
+
+func cEmpty(s ...string) error {
+	for _, i := range s {
+		if i == "" {
+			xlog.Errorf("Key.Empty")
+			return fmt.Errorf("Key.Empty")
+		}
+	}
+	return nil
 }

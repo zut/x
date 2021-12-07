@@ -11,10 +11,25 @@ func WhereGtSI(s []int, limit, a, b int) []int {
 	}
 	return d
 }
+func WhereGtNum(s []float64, limit float64) (num int) {
+	for n := range s {
+		if s[n] > limit {
+			num++
+		}
+	}
+	return
+}
 func WhereGT(s []float64, limit, a, b float64) []float64 {
 	d := make([]float64, len(s))
 	for n, i := range s {
 		d[n] = IfF64(i > limit, a, b)
+	}
+	return d
+}
+func WhereGT2(s []float64, limit float64) []float64 {
+	d := make([]float64, len(s))
+	for n, i := range s {
+		d[n] = IfF64(i > limit, i, 0)
 	}
 	return d
 }
@@ -32,6 +47,15 @@ func WhereLT(s []float64, limit, a, b float64) []float64 {
 		d[n] = IfF64(i < limit, a, b)
 	}
 	return d
+}
+
+func WhereLtNum(s []float64, limit float64) (num int) {
+	for n := range s {
+		if s[n] < limit {
+			num++
+		}
+	}
+	return
 }
 
 // 2维变1维，然后相加

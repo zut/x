@@ -151,6 +151,13 @@ func Str(i interface{}) string {
 	return gconv.String(i)
 }
 
+func StrSub(i string, maxLength int) string {
+	if len(i) <= maxLength {
+		return i
+	}
+	return i[:maxLength]
+}
+
 func F64sReverse(i []float64, decimals ...int) []float64 {
 	length := len(i)
 	i2 := make([]float64, length)
@@ -247,6 +254,14 @@ func MaxInt(i []int) int {
 	return gconv.Int(Max(gconv.Float64s(i)))
 }
 func InRangeInt(i, min, max int) int {
+	if i > max {
+		return max
+	} else if i < min {
+		return min
+	}
+	return i
+}
+func InRangeInt64(i, min, max int64) int64 {
 	if i > max {
 		return max
 	} else if i < min {
@@ -364,6 +379,11 @@ func DeprecatedTest(i float64) float64 {
 // IntZ3 ZFill
 func IntZ3(i int) string {
 	return fmt.Sprintf("%.3d", i)
+}
+
+// IntZ8 ZFill
+func IntZ8(i int) string {
+	return fmt.Sprintf("%.8d", i)
 }
 
 // Z2 ZFill

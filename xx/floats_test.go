@@ -3,7 +3,6 @@ package xx_test
 import (
 	"fmt"
 	"github.com/gogf/gf/test/gtest"
-	"github.com/zut/x/model"
 	"github.com/zut/x/xx"
 	"testing"
 )
@@ -121,32 +120,5 @@ func Test_LineToLog(t *testing.T) {
 		v0 := -1.0
 		v1 := xx.LineToLog(v0)
 		t.AssertEQ(v1, 0.0)
-	})
-}
-
-func Test_GetOutliers(t *testing.T) {
-	gtest.C(t, func(t *gtest.T) {
-		v1 := model.Outlier{
-			Data: []float64{1, 201, 115, 83, 2, 201, 201, 1, 201},
-		}
-		v1.Calc()
-		t.Assert(v1.ValList, []float64{1, 2, 1})
-		t.Assert(v1.IdxList, []float64{0, 4, 7})
-	})
-	gtest.C(t, func(t *gtest.T) {
-		v1 := model.Outlier{
-			Data: []float64{19, 9, 16, 382, 7, 12, 6, 13, 4, 5},
-		}
-		v1.Calc()
-		t.Assert(v1.ValList, []float64{382})
-		t.Assert(v1.IdxList, []float64{3})
-	})
-	gtest.C(t, func(t *gtest.T) {
-		v1 := model.Outlier{
-			Data: []float64{1, 2, 3, 4, 1, 2, 3, 4, 5, 1, 200},
-		}
-		v1.Calc()
-		t.Assert(v1.ValList, []float64{200})
-		t.Assert(v1.IdxList, []float64{10})
 	})
 }

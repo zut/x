@@ -1,9 +1,10 @@
 package xx_test
 
 import (
+	"testing"
+
 	"github.com/gogf/gf/test/gtest"
 	"github.com/zut/x/xx"
-	"testing"
 )
 
 type Item struct {
@@ -12,10 +13,9 @@ type Item struct {
 	NameOther   string
 }
 type Item2 struct {
-	Name        string
-	privateName string
-	Name2       string
-	Name3       string
+	Name  string
+	Name2 string
+	Name3 string
 }
 
 func TestPack(t *testing.T) {
