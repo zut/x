@@ -2,15 +2,24 @@ package xx
 
 import (
 	"encoding/hex"
+	"io"
+	"os"
+
+	"github.com/gogf/gf/crypto/gsha1"
 	"github.com/gogf/gf/util/gconv"
 	"github.com/zut/x/xlog"
 	"golang.org/x/crypto/sha3"
-	"io"
-	"os"
 )
 
+func Sha1(v interface{}) string {
+	return gsha1.Encrypt(v)
+}
 func Sha3(v interface{}) string {
 	r := sha3.Sum256(gconv.Bytes(Str(v))) // 一定要 xx.Str(v) 否者每次都不同sha3
+	return hex.EncodeToString(r[:])
+}
+func Sha3Bytes(v []byte) string {
+	r := sha3.Sum256(v) // 一定要 xx.Str(v) 否者每次都不同sha3
 	return hex.EncodeToString(r[:])
 }
 

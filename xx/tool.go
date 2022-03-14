@@ -112,6 +112,16 @@ func RandomLetter(length int) string {
 	}
 	return string(b)
 }
+func RandomNumber(length int) string {
+	const charset = "0123456789"
+	var seededRand = rand.New(
+		rand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
 func RandomF64(min, max float64, decimals ...int) float64 {
 	rand.Seed(time.Now().UnixNano())
 	v := min + rand.Float64()*(max-min)
@@ -254,6 +264,18 @@ func EqualST(a []string, b []string) bool {
 }
 func SliceFloat64Equal(a []float64, b []float64) bool { //contains
 	return SliceEqual(gconv.SliceAny(a), gconv.SliceAny(b))
+}
+
+func SameMapStrStr(a map[string]string, b map[string]string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for k := range a {
+		if a[k] != b[k] {
+			return false
+		}
+	}
+	return true
 }
 func InSSI(si []int, ssi [][]int) bool { //contains
 	for _, a := range ssi {
@@ -510,9 +532,25 @@ func FirstF64(s []float64, defaultV ...float64) float64 {
 	}
 	return 0
 }
+func LastF64(s []float64, defaultV ...float64) float64 {
+	if len(s) > 0 {
+		return s[0]
+	} else if len(defaultV) > 0 {
+		return defaultV[0]
+	}
+	return 0
+}
 func FirstStr(s []string, defaultV ...string) string {
 	if len(s) > 0 {
 		return s[0]
+	} else if len(defaultV) > 0 {
+		return defaultV[0]
+	}
+	return ""
+}
+func LastStr(s []string, defaultV ...string) string {
+	if len(s) > 0 {
+		return s[len(s)-1]
 	} else if len(defaultV) > 0 {
 		return defaultV[0]
 	}
@@ -526,6 +564,18 @@ func FirstInt(s []int, defaultValue ...int) int {
 		return defaultValue[0]
 	}
 	return 0
+}
+func PartSI(s []int, maxLength int) []int {
+	if len(s) > maxLength {
+		return s[:maxLength-1]
+	}
+	return s
+}
+func PartSF(s []float64, maxLength int) []float64 {
+	if len(s) > maxLength {
+		return s[:maxLength-1]
+	}
+	return s
 }
 func FirstBool(s []bool, defaultValue ...bool) bool {
 	if len(s) > 0 {
@@ -668,14 +718,24 @@ func SF64Index(i float64, s []float64) int {
 }
 
 func MapKeys(m map[string]interface{}) []string {
-	keys := make([]string, len(m))
+	s := make([]string, len(m))
 	n := 0
-	for key := range m {
-		keys[n] = key
+	for k := range m {
+		s[n] = k
 		n++
 	}
-	sort.Strings(keys)
-	return keys
+	sort.Strings(s)
+	return s
+}
+
+func MapValueF64s(m map[string]float64) []float64 {
+	s := make([]float64, len(m))
+	n := 0
+	for k := range m {
+		s[n] = m[k]
+		n++
+	}
+	return s
 }
 
 func FileExists(f string) bool {
@@ -743,4 +803,8 @@ func Default(OriginalVaule, v string) string {
 
 func DefaultF64(OriginalVaule, v float64) float64 {
 	return IfF64(OriginalVaule == 0, v, OriginalVaule)
+}
+
+func DefaultInt(OriginalVaule, v int) int {
+	return IfInt(OriginalVaule == 0, v, OriginalVaule)
 }

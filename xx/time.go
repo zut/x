@@ -18,7 +18,7 @@ func T1(title ...interface{}) {
 		title = append(title, "Time")
 	}
 	key := Str(title[0])
-	gcache.Set(key, time.Now(), 0) // 改成先进后出, 剥洋葱的方式, 嵌套多个
+	_ = gcache.Set(key, time.Now(), 0) // 改成先进后出, 剥洋葱的方式, 嵌套多个
 }
 
 func T2(title ...interface{}) {

@@ -2,11 +2,12 @@ package xx
 
 import (
 	"fmt"
+	"math"
+	"sort"
+
 	"github.com/gogf/gf/util/gconv"
 	"gonum.org/v1/gonum/floats"
 	"gonum.org/v1/gonum/floats/scalar"
-	"math"
-	"sort"
 )
 
 func Diff(s []float64) float64 {
@@ -320,6 +321,11 @@ func Avg(s []float64) float64 {
 	return floats.Sum(s) / F64(len(s))
 }
 
+// Sum
+func Sum(s []float64) float64 {
+	return floats.Sum(s)
+}
+
 // min > max
 func ArgSort(s []float64) []int {
 	idx := make([]int, len(s))
@@ -376,6 +382,10 @@ func DeprecatedTest(i float64) float64 {
 	return scalar.Round(i, 3)
 }
 
+// IntZ2 ZFill
+func IntZ2(i int) string {
+	return fmt.Sprintf("%.2d", i)
+}
 // IntZ3 ZFill
 func IntZ3(i int) string {
 	return fmt.Sprintf("%.3d", i)
@@ -386,6 +396,11 @@ func IntZ8(i int) string {
 	return fmt.Sprintf("%.8d", i)
 }
 
+// Z1 ZFill
+func Z1(i float64) string {
+	return fmt.Sprintf("%.1f", i)
+}
+
 // Z2 ZFill
 func Z2(i float64) string {
 	return fmt.Sprintf("%.2f", i)
@@ -394,6 +409,11 @@ func Z2(i float64) string {
 // Z3 ZFill
 func Z3(i float64) string {
 	return fmt.Sprintf("%.3f", i)
+}
+
+// Z4 ZFill
+func Z4(i float64) string {
+	return fmt.Sprintf("%.4f", i)
 }
 
 // R4  Round 4

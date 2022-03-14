@@ -162,7 +162,7 @@ func HKeys(h string) ([]string, error) {
 }
 
 func HKeysPrefix(h, prefix string) ([]string, error) {
-	if err := cEmpty(h, prefix); err != nil {
+	if err := cEmpty(h); err != nil {
 		return nil, err
 	}
 	// 返回 key 指定的哈希集中所有字段的名字。
@@ -402,7 +402,7 @@ func HValuesTo(h string, p interface{}) error {
 }
 
 func HValuesToByPrefix(h, prefix string, p interface{}) error {
-	if err := cEmpty(h, prefix); err != nil {
+	if err := cEmpty(h); err != nil {
 		return err
 	}
 	xx.IsPointer(p)
@@ -420,7 +420,7 @@ func HValuesToByPrefix(h, prefix string, p interface{}) error {
 }
 
 func HValuesByPrefix(h, prefix string) ([]interface{}, error) {
-	if err := cEmpty(h, prefix); err != nil {
+	if err := cEmpty(h); err != nil {
 		return nil, err
 	}
 	kvm, err := HScanPrefix(h, prefix)

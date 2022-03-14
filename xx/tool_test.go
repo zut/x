@@ -93,13 +93,13 @@ func TestReverseString(t *testing.T) {
 	gtest.C(t, func(t *gtest.T) {
 		v0 := []string{"1", "2", "3"}
 		vTarget := []string{"3", "2", "1"}
-		v1 := xx.ReverseStr(v0)
+		v1 := xx.ReverseST(v0)
 		t.Assert(vTarget, v1)
 	})
 	gtest.C(t, func(t *gtest.T) {
 		v0 := []string{"1", "2", "3", "4"}
 		vTarget := []string{"4", "3", "2", "1"}
-		v1 := xx.ReverseStr(v0)
+		v1 := xx.ReverseST(v0)
 		t.Assert(vTarget, v1)
 	})
 }

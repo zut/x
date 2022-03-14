@@ -3,8 +3,11 @@ package xx
 import (
 	"bytes"
 	"compress/zlib"
-	"github.com/vmihailenco/msgpack/v5"
+	"fmt"
 	"io"
+
+	"github.com/gogf/gf/crypto/gaes"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 func Pack(src interface{}) ([]byte, error) {
@@ -76,31 +79,33 @@ func UnCompressZLib(src []byte) ([]byte, error) {
 	return out.Bytes(), nil
 }
 
-//func PackEncrypt(src interface{}) (dst []byte, err error) {
-//	dst, err = msgpack.Marshal(src)
-//	if err != nil {
-//		return
-//	}
-//	return gaes.Encrypt(dst, []byte("8byNbjJWdTlExWeWrFd0arLdSY8I1NrU"))
-//}
-//func UnpackDecrypt(src []byte) (dst interface{}, err error) {
-//	if len(src) == 0 {
-//		return nil, errors.New("NotFound")
-//	}
-//	err = UnpackDecryptTo(src, &dst)
-//	return
-//}
-//func UnpackDecryptTo(src []byte, dst interface{}) (err error) {
-//	if len(src) == 0 {
-//		return errors.New("NotFound")
-//	}
-//	IsPointer(dst)
-//	var data []byte
-//	if data, err = gaes.Decrypt(src, []byte("8byNbjJWdTlExWeWrFd0arLdSY8I1NrU")); err != nil {
-//		return
-//	}
-//	return msgpack.Unmarshal(data, dst)
-//}
+// PackEncrypt
+// Note that the key must be 16/24/32 bit length.
+func PackEncrypt(src interface{}, key string) (dst []byte, err error) {
+	dst, err = PackCompress(src)
+	if err != nil {
+		return
+	}
+	return gaes.Encrypt(dst, []byte(key))
+}
+func UnpackDecrypt(src []byte, key string) (dst interface{}, err error) {
+	if len(src) == 0 {
+		return nil, fmt.Errorf("data.empty")
+	}
+	err = UnpackDecryptTo(src, &dst, key)
+	return
+}
+func UnpackDecryptTo(src []byte, dst interface{}, key string) (err error) {
+	if len(src) == 0 {
+		return fmt.Errorf("data.empty")
+	}
+	IsPointer(dst)
+	var data []byte
+	if data, err = gaes.Decrypt(src, []byte(key)); err != nil {
+		return
+	}
+	return UnCompressUnpackTo(data, dst)
+}
 
 //func PackEncrypt(src interface{}) (data []byte, err error) {
 //	data, err = msgpack.Marshal(src)
@@ -118,6 +123,7 @@ func UnCompressZLib(src []byte) ([]byte, error) {
 //	//xlog.Debugf("Save: %.2f%%", 100-100*float64(len(data))/float64(len(gconv.Bytes(src))))
 //	return gaes.Encrypt(data, []byte("8byNbjJWdTlExWeWrFd0arLdSY8I1NrU"))
 //}
+
 //
 //func UnpackToDecrypt(src []byte, item interface{}) (err error) {
 //	if len(src) == 0 {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ip2location/ip2location-go"
 	"github.com/shirou/gopsutil/v3/disk"
+	"github.com/shirou/gopsutil/v3/host"
 	"github.com/shirou/gopsutil/v3/load"
 	"github.com/shirou/gopsutil/v3/mem"
 )
@@ -32,6 +33,7 @@ type PsInfo struct {
 	Memory PsInfoItem
 	Disk   PsInfoItem
 	Load   PsInfoLoad
+	Uptime uint64
 }
 
 // GetPsInfo ...
@@ -52,6 +54,9 @@ func GetPsInfo() (a PsInfo) {
 		a.Load.Avg1 = R2(v.Load1)
 		a.Load.Avg5 = R2(v.Load5)
 		a.Load.Avg15 = R2(v.Load15)
+	}
+	if uptime, err := host.Uptime(); err == nil {
+		a.Uptime = uptime
 	}
 	return
 }
