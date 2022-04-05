@@ -175,7 +175,7 @@ func InsertSF64(s []float64, index int, value float64) []float64 {
 	return s2
 }
 func InsertSStr(s []string, index int, value string) []string {
-	s2 := CopySStr(s)
+	s2 := CopyST(s)
 	tmp := append([]string{}, s2[index:]...)
 	s2 = append(s2[0:index], value)
 	s2 = append(s2, tmp...)
@@ -478,7 +478,7 @@ func CopySInt(src []int) []int {
 	copy(dst, src)
 	return dst
 }
-func CopySStr(s []string) []string {
+func CopyST(s []string) []string {
 	d := make([]string, len(s))
 	copy(d, s)
 	return d

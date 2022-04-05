@@ -758,7 +758,7 @@ func bToMb(b uint64) uint64 {
 	return b / 1024 / 1024
 }
 func MergeStr(a, b []string) []string {
-	s := CopySStr(a)
+	s := CopyST(a)
 	s = append(s, b...)
 	s = RemoveDuplicateStr(s)
 	sort.Strings(s)
