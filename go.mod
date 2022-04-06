@@ -3,7 +3,7 @@ module github.com/zut/x
 go 1.18
 
 require (
-	github.com/go-redis/redis/v8 v8.11.4
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gogf/gf v1.16.6
 	github.com/ip2location/ip2location-go v8.3.0+incompatible
 	github.com/labstack/gommon v0.3.1
@@ -11,7 +11,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.21.12
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871
-	gonum.org/v1/gonum v0.9.3
+	gonum.org/v1/gonum v0.11.0
 )
 
 require (
@@ -41,8 +41,8 @@ require (
 	go.opentelemetry.io/otel v1.0.0-RC2 // indirect
 	go.opentelemetry.io/otel/trace v1.0.0-RC2 // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
-	golang.org/x/sys v0.0.0-20211103235746-7861aae1554b // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
