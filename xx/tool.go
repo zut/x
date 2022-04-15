@@ -400,9 +400,9 @@ func IfSI(cdt bool, a []int, b []int) []int {
 	}
 	return b
 }
-func IfErr(cdt bool, a error) error {
+func IfErr(cdt bool, s ...interface{}) error {
 	if cdt {
-		return a
+		return fmt.Errorf(gstr.JoinAny(s, " "))
 	}
 	return nil
 }
