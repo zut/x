@@ -320,6 +320,10 @@ func Float64sSortMaxToMin(s []float64) []float64 {
 func Avg(s []float64) float64 {
 	return floats.Sum(s) / F64(len(s))
 }
+ 
+func Abs(a float64) float64 {
+	return math.Abs(a)  
+}
 
 // Sum
 func Sum(s []float64) float64 {
@@ -386,6 +390,7 @@ func DeprecatedTest(i float64) float64 {
 func IntZ2(i int) string {
 	return fmt.Sprintf("%.2d", i)
 }
+
 // IntZ3 ZFill
 func IntZ3(i int) string {
 	return fmt.Sprintf("%.3d", i)

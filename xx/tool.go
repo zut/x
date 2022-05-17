@@ -2,8 +2,8 @@ package xx
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"image/png"
 	"math/rand"
 	"os"
@@ -400,9 +400,10 @@ func IfSI(cdt bool, a []int, b []int) []int {
 	}
 	return b
 }
-func IfErr(cdt bool, s ...interface{}) error {
+func IfErr(cdt bool, a interface{}, s ...interface{}) error { // a 是为了放在, 一个消息都没有
 	if cdt {
-		return fmt.Errorf(gstr.JoinAny(s, " "))
+		s = append(s, a)
+		return errors.New(gstr.JoinAny(s, " "))
 	}
 	return nil
 }
