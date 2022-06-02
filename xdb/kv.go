@@ -97,19 +97,25 @@ func KeysByPrefix(prefix string) ([]string, error) {
 	return Scan(fmt.Sprintf("%v*", prefix))
 }
 
-func MDel(ks []string) error {
-	c := Conn()
-	defer ConnClose(c)
-	return c.Del(ctx, ks...).Err()
-}
-func MDelByPrefix(prefix string) error {
-	keys, err := KeysByPrefix(prefix)
-	if err != nil {
-		return err
+func MDel(s []string) error {
+	if len(s) == 0 {
+		return nil
 	}
 	c := Conn()
 	defer ConnClose(c)
-	return c.Del(ctx, keys...).Err()
+	return c.Del(ctx, s...).Err()
+}
+func MDelByPrefix(prefix string) error {
+	s, err := KeysByPrefix(prefix)
+	if err != nil {
+		return err
+	}
+	if len(s) == 0 {
+		return nil
+	}
+	c := Conn()
+	defer ConnClose(c)
+	return c.Del(ctx, s...).Err()
 }
 func MGet(ks []string) ([]interface{}, error) {
 	c := Conn()

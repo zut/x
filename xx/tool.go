@@ -402,8 +402,9 @@ func IfSI(cdt bool, a []int, b []int) []int {
 }
 func IfErr(cdt bool, a interface{}, s ...interface{}) error { // a 是为了放在, 一个消息都没有
 	if cdt {
-		s = append(s, a)
-		return errors.New(gstr.JoinAny(s, " "))
+		s2 := S{a}
+		s2 = append(s2, s...)
+		return errors.New(gstr.JoinAny(s2, " "))
 	}
 	return nil
 }

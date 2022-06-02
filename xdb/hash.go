@@ -2,10 +2,10 @@ package xdb
 
 import (
 	"fmt"
-	"math"
-
 	"github.com/gogf/gf/util/gconv"
+	"github.com/pkg/errors"
 	"github.com/zut/x/xx"
+	"math"
 )
 
 func HClear(h string) error {
@@ -94,7 +94,7 @@ func HIncrGet(h, k string) (int, error) {
 	c := Conn()
 	defer ConnClose(c)
 	r, err := c.HGet(ctx, h, k).Result()
-	return gconv.Int(r), err
+	return gconv.Int(r), errors.Wrap(err, "HIncrGet")
 }
 func HIncr(h, k string) (int, error) {
 	return HIncrBy(h, k, 1)
