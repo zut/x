@@ -269,8 +269,9 @@ func HmGetTo(h string, ks []string, p interface{}) error {
 	return gconv.Structs(vs, p)
 }
 
-func HmSet(h string, kvm map[string]interface{}) error {
-	if err := cEmpty(h); err != nil {
+func hmSet(h string, kvm map[string]interface{}, key string) error {
+	err := cEmpty(h)
+	if err != nil {
 		return err
 	}
 	if len(kvm) == 0 {
@@ -279,9 +280,17 @@ func HmSet(h string, kvm map[string]interface{}) error {
 	kvmPack := make(map[string]interface{}, len(kvm))
 	kvmPackForKeys := make(map[string]interface{}, len(kvm))
 	for k, v := range kvm {
-		b, err := xx.Pack(v)
-		if err != nil {
-			return err
+		var b []byte
+		if key == "" {
+			b, err = xx.Pack(v)
+			if err != nil {
+				return err
+			}
+		} else {
+			b, err = xx.PackEncrypt(v, key)
+			if err != nil {
+				return err
+			}
 		}
 		kvmPack[k] = b
 		kvmPackForKeys[k] = 1
@@ -291,6 +300,14 @@ func HmSet(h string, kvm map[string]interface{}) error {
 	_ = c.HMSet(ctx, AddKK(h), kvmPackForKeys).Err()
 	return c.HMSet(ctx, h, kvmPack).Err()
 }
+
+func HmSet(h string, kvm map[string]interface{}) error {
+	return hmSet(h, kvm, "")
+}
+func HmSetEncrypt(h string, kvm map[string]interface{}, key string) error {
+	return hmSet(h, kvm, key)
+}
+
 func HmSetOriginal(h string, kvm map[string]interface{}) error {
 	if len(kvm) == 0 {
 		return nil
@@ -350,18 +367,34 @@ func HScanPrefix(h string, prefix string) (map[string]interface{}, error) {
 	return kvm, err
 }
 
-func HSet(h, k string, v interface{}) error {
-	if err := cEmpty(h, k); err != nil {
-		return err
-	}
-	b, err := xx.Pack(v)
+func hSet(h, k string, v interface{}, key string) error {
+	err := cEmpty(h, k)
 	if err != nil {
 		return err
+	}
+	var b []byte
+	if key == "" {
+		b, err = xx.Pack(v)
+		if err != nil {
+			return err
+		}
+	} else {
+		b, err = xx.PackEncrypt(v, key)
+		if err != nil {
+			return err
+		}
 	}
 	c := Conn()
 	defer ConnClose(c)
 	_ = c.HSet(ctx, AddKK(h), k, 1)
 	return c.HSet(ctx, h, k, b).Err()
+}
+
+func HSet(h, k string, v interface{}) error {
+	return hSet(h, k, v, "")
+}
+func HSetEncrypt(h, k string, v interface{}, key string) error {
+	return hSet(h, k, v, key)
 }
 
 func HValuesNotUnpack(h string) ([]string, error) {

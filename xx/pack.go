@@ -88,14 +88,14 @@ func PackEncrypt(src interface{}, key string) (dst []byte, err error) {
 	}
 	return gaes.Encrypt(dst, []byte(key))
 }
-func UnpackDecrypt(src []byte, key string) (dst interface{}, err error) {
+func DecryptUnpack(src []byte, key string) (dst interface{}, err error) {
 	if len(src) == 0 {
 		return nil, fmt.Errorf("data.empty")
 	}
-	err = UnpackDecryptTo(src, &dst, key)
+	err = DecryptUnpackTo(src, &dst, key)
 	return
 }
-func UnpackDecryptTo(src []byte, dst interface{}, key string) (err error) {
+func DecryptUnpackTo(src []byte, dst interface{}, key string) (err error) {
 	if len(src) == 0 {
 		return fmt.Errorf("data.empty")
 	}
