@@ -3,7 +3,6 @@ package xdb
 import (
 	"fmt"
 	"github.com/gogf/gf/util/gconv"
-	"github.com/pkg/errors"
 	"github.com/zut/x/xx"
 	"math"
 )
@@ -94,7 +93,8 @@ func HIncrGet(h, k string) (int, error) {
 	c := Conn()
 	defer ConnClose(c)
 	r, err := c.HGet(ctx, h, k).Result()
-	return gconv.Int(r), errors.Wrap(err, "HIncrGet")
+	//return gconv.Int(r), errors.Wrap(err, "HIncrGet")
+	return gconv.Int(r), err
 }
 func HIncr(h, k string) (int, error) {
 	return HIncrBy(h, k, 1)

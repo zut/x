@@ -73,6 +73,10 @@ func IsPointer(value interface{}) {
 		xlog.Panic("v is not Pointer: " + Str(reflect.ValueOf(value).Kind()))
 	}
 }
+// IsEmptyStr gregex.IsMatchString(`^\s*$`, i)
+func IsEmptyStr(i string) bool {
+	return gregex.IsMatchString(`^\s*$`, i)
+}
 
 func Show(i interface{}) {
 	xlog.Info(i, "Skip1")
@@ -161,7 +165,6 @@ func RandomStrInST(s []string) string {
 	}
 	return s[rand.Intn(len(s))]
 }
-
 func Join(s ...interface{}) string {
 	return joinSep("_", 0, s...)
 }

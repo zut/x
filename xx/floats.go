@@ -122,6 +122,9 @@ func F64(i interface{}) float64 {
 func Int(i interface{}) int {
 	return gconv.Int(i)
 }
+func Int64(i interface{}) int64 {
+	return gconv.Int64(i)
+}
 func F64s(s []string) []float64 {
 	s2 := make([]float64, len(s))
 	for n := range s {
