@@ -11,7 +11,9 @@ func HClear(h string) error {
 	if err := cEmpty(h); err != nil {
 		return err
 	}
-	_ = Del(AddKK(h))
+	if err := Del(AddKK(h)); err != nil {
+		return err
+	}
 	return Del(h)
 }
 
@@ -23,7 +25,9 @@ func HDel(h, k string) error {
 	// 如果 key 指定的哈希集不存在，它将被认为是一个空的哈希集，该命令将返回0。
 	c := Conn()
 	defer ConnClose(c)
-	_ = c.HDel(ctx, AddKK(h), k).Err()
+	if err := c.HDel(ctx, AddKK(h), k).Err(); err != nil {
+		return err
+	}
 	return c.HDel(ctx, h, k).Err()
 }
 
@@ -213,7 +217,9 @@ func HmDel(h string, ks []string) error {
 	}
 	c := Conn()
 	defer ConnClose(c)
-	_ = c.HDel(ctx, AddKK(h), ks...).Err()
+	if err := c.HDel(ctx, AddKK(h), ks...).Err(); err != nil {
+		return err
+	}
 	return c.HDel(ctx, h, ks...).Err()
 }
 
@@ -227,7 +233,9 @@ func HmDelByPrefix(h string, prefix string) error {
 	}
 	c := Conn()
 	defer ConnClose(c)
-	_ = c.HDel(ctx, AddKK(h), ks...).Err()
+	if err := c.HDel(ctx, AddKK(h), ks...).Err(); err != nil {
+		return err
+	}
 	return c.HDel(ctx, h, ks...).Err()
 }
 
@@ -287,7 +295,7 @@ func hmSet(h string, kvm map[string]interface{}, key string) error {
 				return err
 			}
 		} else {
-			b, err = xx.PackEncrypt(v, key)
+			b, err = xx.PackCompressEncrypt(v, key)
 			if err != nil {
 				return err
 			}
@@ -297,7 +305,9 @@ func hmSet(h string, kvm map[string]interface{}, key string) error {
 	}
 	c := Conn()
 	defer ConnClose(c)
-	_ = c.HMSet(ctx, AddKK(h), kvmPackForKeys).Err()
+	if err := c.HMSet(ctx, AddKK(h), kvmPackForKeys).Err(); err != nil {
+		return err
+	}
 	return c.HMSet(ctx, h, kvmPack).Err()
 }
 
@@ -309,6 +319,7 @@ func HmSetEncrypt(h string, kvm map[string]interface{}, key string) error {
 }
 
 func HmSetOriginal(h string, kvm map[string]interface{}) error {
+	// tst pass  AddKK
 	if len(kvm) == 0 {
 		return nil
 	}
@@ -379,14 +390,16 @@ func hSet(h, k string, v interface{}, key string) error {
 			return err
 		}
 	} else {
-		b, err = xx.PackEncrypt(v, key)
+		b, err = xx.PackCompressEncrypt(v, key)
 		if err != nil {
 			return err
 		}
 	}
 	c := Conn()
 	defer ConnClose(c)
-	_ = c.HSet(ctx, AddKK(h), k, 1)
+	if err := c.HSet(ctx, AddKK(h), k, 1).Err(); err != nil {
+		return err
+	}
 	return c.HSet(ctx, h, k, b).Err()
 }
 

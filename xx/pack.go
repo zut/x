@@ -81,7 +81,7 @@ func UnCompressZLib(src []byte) ([]byte, error) {
 
 // PackEncrypt
 // Note that the key must be 16/24/32 bit length.
-func PackEncrypt(src interface{}, key string) (dst []byte, err error) {
+func PackCompressEncrypt(src interface{}, key string) (dst []byte, err error) {
 	dst, err = PackCompress(src)
 	if err != nil {
 		return
@@ -92,10 +92,10 @@ func DecryptUnpack(src []byte, key string) (dst interface{}, err error) {
 	if len(src) == 0 {
 		return nil, fmt.Errorf("data.empty")
 	}
-	err = DecryptUnpackTo(src, &dst, key)
+	err = DecryptUnCompressUnpackTo(src, &dst, key)
 	return
 }
-func DecryptUnpackTo(src []byte, dst interface{}, key string) (err error) {
+func DecryptUnCompressUnpackTo(src []byte, dst interface{}, key string) (err error) {
 	if len(src) == 0 {
 		return fmt.Errorf("data.empty")
 	}
@@ -105,6 +105,10 @@ func DecryptUnpackTo(src []byte, dst interface{}, key string) (err error) {
 		return
 	}
 	return UnCompressUnpackTo(data, dst)
+}
+
+func Encrypt(plainText, key, iv string) (dst []byte, err error) {
+	return gaes.Encrypt([]byte(plainText), []byte(key), []byte(iv))
 }
 
 //func PackEncrypt(src interface{}) (data []byte, err error) {
