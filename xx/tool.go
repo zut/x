@@ -3,6 +3,7 @@ package xx
 import (
 	"bytes"
 	"fmt"
+	"github.com/flytam/filenamify"
 	"github.com/pkg/errors"
 	"image/png"
 	"math/rand"
@@ -22,6 +23,14 @@ import (
 	"github.com/zut/x/vv"
 	"github.com/zut/x/xlog"
 )
+
+func Str(i interface{}) string {
+	return gconv.String(i)
+}
+
+func SubStr(str string, start int, length ...int) string {
+	return gstr.SubStr(str, start, length...)
+}
 
 func TryExpect() {
 	if err := recover(); err != nil {
@@ -73,6 +82,7 @@ func IsPointer(value interface{}) {
 		xlog.Panic("v is not Pointer: " + Str(reflect.ValueOf(value).Kind()))
 	}
 }
+
 // IsEmptyStr gregex.IsMatchString(`^\s*$`, i)
 func IsEmptyStr(i string) bool {
 	return gregex.IsMatchString(`^\s*$`, i)
@@ -802,14 +812,51 @@ func RemoveDuplicateInt(intSlice []int) []int {
 	return s2
 }
 
-func Default(OriginalVaule, v string) string {
-	return IfStr(OriginalVaule == "", v, OriginalVaule)
+func Default(OriginalValue, v string) string {
+	return IfStr(OriginalValue == "", v, OriginalValue)
 }
 
-func DefaultF64(OriginalVaule, v float64) float64 {
-	return IfF64(OriginalVaule == 0, v, OriginalVaule)
+func DefaultF64(OriginalValue, v float64) float64 {
+	return IfF64(OriginalValue == 0, v, OriginalValue)
 }
 
-func DefaultInt(OriginalVaule, v int) int {
-	return IfInt(OriginalVaule == 0, v, OriginalVaule)
+func DefaultInt(OriginalValue, v int) int {
+	return IfInt(OriginalValue == 0, v, OriginalValue)
+}
+
+func DefaultInt64(OriginalValue, v int64) int64 {
+	return IfInt64(OriginalValue == 0, v, OriginalValue)
+}
+func DefaultST(OriginalValue, v []string) []string {
+	return IfST(len(OriginalValue) == 0, v, OriginalValue)
+}
+
+func SafeFilename(i string) string {
+	i2, err := filenamify.Filenamify(i, filenamify.Options{
+		Replacement: "!",
+		MaxLength:   200, // linux win max 256
+	})
+	if err != nil {
+		xlog.Warning(i, err)
+		i2, _ = gregex.ReplaceString(`\W`, "_", i)
+	}
+	//后缀被干掉
+	s, err := gregex.MatchString(`\.[a-zA-Z0-9]{1,10}$`, i)
+	if err == nil && len(s) > 0 {
+		suffix := s[0]
+		if gstr.SubStr(i2, len(i2)-len(suffix)) != suffix {
+			i2 += suffix
+		}
+	}
+	return i2
+}
+
+func MergeMapStrStr(maps ...map[string]string) map[string]string {
+	result := make(map[string]string)
+	for _, m := range maps {
+		for k, v := range m {
+			result[k] = v
+		}
+	}
+	return result
 }

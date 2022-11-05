@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/test/gtest"
+	"github.com/zut/x/xlog"
 	"github.com/zut/x/xx"
 	"testing"
 )
@@ -156,5 +157,11 @@ func TestCopy(t *testing.T) {
 		t.Assert(v0.Name, "v0")
 		t.Assert(v0.Data[0], 1)
 
+	})
+}
+
+func TestSafeFilename(t *testing.T) {
+	gtest.C(t, func(t *gtest.T) {
+		xlog.Info(xx.SafeFilename("[]float64as[]float64as.jpg"))
 	})
 }

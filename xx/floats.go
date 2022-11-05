@@ -2,6 +2,7 @@ package xx
 
 import (
 	"fmt"
+	"github.com/gogf/gf/text/gregex"
 	"math"
 	"sort"
 
@@ -122,6 +123,12 @@ func F64(i interface{}) float64 {
 func Int(i interface{}) int {
 	return gconv.Int(i)
 }
+func ReplaceAndInt(i interface{}) int {
+	if i2, err := gregex.ReplaceString(`\D`, "", Str(i)); err == nil && len(i2) > 0 {
+		return gconv.Int(i2)
+	}
+	return gconv.Int(i)
+}
 func Int64(i interface{}) int64 {
 	return gconv.Int64(i)
 }
@@ -149,17 +156,6 @@ func RangeInt(start, stop int) []int {
 		a[i] = start + i
 	}
 	return a
-}
-
-func Str(i interface{}) string {
-	return gconv.String(i)
-}
-
-func StrSub(i string, maxLength int) string {
-	if len(i) <= maxLength {
-		return i
-	}
-	return i[:maxLength]
 }
 
 func F64sReverse(i []float64, decimals ...int) []float64 {
@@ -323,9 +319,9 @@ func Float64sSortMaxToMin(s []float64) []float64 {
 func Avg(s []float64) float64 {
 	return floats.Sum(s) / F64(len(s))
 }
- 
+
 func Abs(a float64) float64 {
-	return math.Abs(a)  
+	return math.Abs(a)
 }
 
 // Sum

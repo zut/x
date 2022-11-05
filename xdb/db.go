@@ -34,9 +34,9 @@ func Open(HostPort ...string) error {
 	xlog.Info("rdb Open", host, port)
 	rdb = redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%v:%v", host, port),
-		//DialTimeout:  10 * time.Second,
-		//ReadTimeout:  20 * time.Second,
-		//WriteTimeout: 20 * time.Second,
+		DialTimeout:  10 * time.Second,
+		ReadTimeout:  20 * time.Second,
+		WriteTimeout: 20 * time.Second,
 		//PoolSize:     100,
 		//PoolTimeout:  20 * time.Second,
 	})

@@ -21,8 +21,8 @@ func GetFieldDiffOne(a, o interface{}) (keyList []string, v1List []string, v2Lis
 		v1, v2 := Str(oElem.Field(i).Interface()), Str(aElem.Field(i).Interface())
 		if v1 != v2 {
 			keyList = append(keyList, name)
-			v1List = append(v1List, StrSub(v1, 4096))
-			v2List = append(v2List, StrSub(v2, 4096))
+			v1List = append(v1List, SubStr(v1, 0, 4096))
+			v2List = append(v2List, SubStr(v2, 0, 4096))
 		}
 	}
 	return

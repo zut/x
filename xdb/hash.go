@@ -42,6 +42,10 @@ func HExists(h, k string) (bool, error) {
 	defer ConnClose(c)
 	return c.HExists(ctx, h, k).Result()
 }
+func HExistsNotErr(h, k string) bool {
+	b, _ := HExists(h, k)
+	return b
+}
 
 func HGet(h, k string) (v interface{}, err error) {
 	err = HGetTo(h, k, &v)
@@ -51,26 +55,74 @@ func HGetStr(h, k string) (v string, err error) {
 	err = HGetTo(h, k, &v)
 	return
 }
+func HGetF64(h, k string) (v float64, err error) {
+	err = HGetTo(h, k, &v)
+	return
+}
+func HGetInt(h, k string) (v int, err error) {
+	err = HGetTo(h, k, &v)
+	return
+}
+func HGetInt64(h, k string) (v int64, err error) {
+	err = HGetTo(h, k, &v)
+	return
+}
 
-func HGetAll(h string) (map[string]interface{}, error) {
+func hGetAllOriginal(h string) (map[string]string, error) {
 	if err := cEmpty(h); err != nil {
 		return nil, err
 	}
 	c := Conn()
 	defer ConnClose(c)
-	kvm, err := c.HGetAll(ctx, h).Result()
+	return c.HGetAll(ctx, h).Result()
+}
+
+func HGetAll(h string) (map[string]interface{}, error) {
+	m, err := hGetAllOriginal(h)
 	if err != nil {
 		return nil, err
 	}
-	kvm2 := make(map[string]interface{}, len(kvm))
-	for k, v := range kvm {
+	m2 := make(map[string]interface{}, len(m))
+	for k, v := range m {
 		v2, err := xx.Unpack(gconv.Bytes(v))
 		if err != nil {
 			return nil, err
 		}
-		kvm2[k] = v2
+		m2[k] = v2
 	}
-	return kvm2, err
+	return m2, err
+}
+
+func HGetAllMapStrInt(h string) (map[string]int, error) {
+	m, err := hGetAllOriginal(h)
+	if err != nil {
+		return nil, err
+	}
+	m2 := make(map[string]int, len(m))
+	for k, v := range m {
+		var a int
+		if err := xx.UnpackTo(gconv.Bytes(v), &a); err != nil {
+			return nil, err
+		}
+		m2[k] = a
+	}
+	return m2, err
+}
+
+func HGetAllMapStrInt64(h string) (map[string]int64, error) {
+	m, err := hGetAllOriginal(h)
+	if err != nil {
+		return nil, err
+	}
+	m2 := make(map[string]int64, len(m))
+	for k, v := range m {
+		var a int64
+		if err := xx.UnpackTo(gconv.Bytes(v), &a); err != nil {
+			return nil, err
+		}
+		m2[k] = a
+	}
+	return m2, err
 }
 
 func HGetTo(h, k string, v interface{}) error {
@@ -458,8 +510,8 @@ func HValuesToByPrefix(h, prefix string, p interface{}) error {
 	}
 	vs := make([]interface{}, len(kvm))
 	n := 0
-	for _, v := range kvm {
-		vs[n] = v
+	for k := range kvm {
+		vs[n] = kvm[k]
 		n++
 	}
 	return gconv.Structs(vs, p)
@@ -475,9 +527,21 @@ func HValuesByPrefix(h, prefix string) ([]interface{}, error) {
 	}
 	vs := make([]interface{}, len(kvm))
 	n := 0
-	for _, v := range kvm {
-		vs[n] = v
+	for k := range kvm {
+		vs[n] = kvm[k]
 		n++
 	}
 	return vs, err
+}
+
+func HValuesByPrefixStr(h, prefix string) ([]string, error) {
+	s1, err := HValuesByPrefix(h, prefix)
+	if err != nil {
+		return nil, err
+	}
+	s2 := make([]string, len(s1))
+	for n := range s1 {
+		s2[n] = xx.Str(s1[n])
+	}
+	return s2, nil
 }
