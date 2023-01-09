@@ -2,6 +2,7 @@ package xx
 
 import (
 	"fmt"
+	"github.com/gogf/gf/os/gfile"
 	"runtime"
 
 	"github.com/ip2location/ip2location-go"
@@ -71,7 +72,11 @@ type Ip2LocationRecord struct {
 // Ip2Location ... Country / CountryShort / Province / City
 func Ip2Location(ipList []string) ([]*Ip2LocationRecord, error) {
 	folder := IfStr(runtime.GOOS == "darwin", "/Users/d/z", "/d/z")
-	db, err := ip2location.OpenDB(fmt.Sprintf("%v/%v", folder, "IP2LOCATION-LITE-DB3.BIN"))
+	dbPath := fmt.Sprintf("%v/%v", folder, "IP2LOCATION-LITE-DB3.BIN")
+	if !gfile.Exists(dbPath) {
+		return nil, fmt.Errorf("db file not found: %v", dbPath)
+	}
+	db, err := ip2location.OpenDB(dbPath)
 	if err != nil {
 		return nil, err
 	}

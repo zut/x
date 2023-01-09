@@ -524,3 +524,27 @@ func ProductSF64(ssf [][]float64) [][]float64 {
 	}
 	return toRet
 }
+
+func CompareF64(a, b float64, Operation string) bool {
+	// LT：less than 小于
+	// LE：less than or equal to 小于等于
+	// EQ：equal to 等于
+	// NE：not equal to 不等于
+	// GE：greater than or equal to 大于等于
+	// GT：greater than 大于
+	switch Operation {
+	case "LT":
+		return a < b
+	case "LE":
+		return a <= b
+	case "EQ":
+		return a == b
+	case "NE":
+		return a != b
+	case "GE":
+		return a >= b
+	case "GT":
+		return a > b
+	}
+	return false
+}

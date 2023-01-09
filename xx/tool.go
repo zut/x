@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/flytam/filenamify"
+	"github.com/gogf/gf/os/gtime"
 	"github.com/pkg/errors"
 	"image/png"
 	"math/rand"
@@ -233,7 +234,6 @@ func IdxST(i string, s []string) int {
 	}
 	return 0
 }
-
 func InST(i string, s []string) bool { //contains
 	for _, a := range s {
 		if a == i {
@@ -241,6 +241,17 @@ func InST(i string, s []string) bool { //contains
 		}
 	}
 	return false
+}
+func InSlice(i string, s []string) bool { //contains
+	for _, a := range s {
+		if a == i {
+			return true
+		}
+	}
+	return false
+}
+func InStringList(i string, s []string) bool { //contains
+	return InST(i, s)
 }
 func InSTIgnore(i string, s ...string) bool { //contains
 	for _, a := range s {
@@ -272,13 +283,24 @@ func SliceEqualST(a []string, b []string) bool { //contains
 	}
 	return true
 }
-func EqualST(a []string, b []string) bool {
-	return SliceEqual(gconv.SliceAny(a), gconv.SliceAny(b))
-}
+ 
 func SliceFloat64Equal(a []float64, b []float64) bool { //contains
 	return SliceEqual(gconv.SliceAny(a), gconv.SliceAny(b))
 }
 
+func EqualStr(a []string, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	sort.Strings(a)
+	sort.Strings(b)
+	for n := range a {
+		if a[n] != b[n] {
+			return false
+		}
+	}
+	return true
+}
 func SameMapStrStr(a map[string]string, b map[string]string) bool {
 	if len(a) != len(b) {
 		return false
@@ -290,6 +312,7 @@ func SameMapStrStr(a map[string]string, b map[string]string) bool {
 	}
 	return true
 }
+
 func InSSI(si []int, ssi [][]int) bool { //contains
 	for _, a := range ssi {
 		if EqualSI(si, a) {
@@ -742,6 +765,16 @@ func MapKeys(m map[string]interface{}) []string {
 	sort.Strings(s)
 	return s
 }
+func MapKeyInts(m map[int]interface{}) []int {
+	s := make([]int, len(m))
+	n := 0
+	for k := range m {
+		s[n] = k
+		n++
+	}
+	sort.Ints(s)
+	return s
+}
 
 func MapValueF64s(m map[string]float64) []float64 {
 	s := make([]float64, len(m))
@@ -859,4 +892,29 @@ func MergeMapStrStr(maps ...map[string]string) map[string]string {
 		}
 	}
 	return result
+}
+
+// MsToStr format default Y-m-d
+func MsToStr(i int64, format string) string {
+	if i <= 0 {
+		return ""
+	}
+	return gtime.NewFromTimeStamp(i / 1000).Format(Default(format, "Y-m-d"))
+}
+
+// StrToMs format default Y-m-d
+func StrToMs(i string, format string) int64 {
+	if format == "" {
+		switch {
+		case gregex.IsMatchString(`^\d{1,2}/\d{1,2}/\d{4}$`, i):
+			format = "d/m/Y"
+		default:
+			format = "Y-m-d"
+		}
+	}
+	t, err := gtime.StrToTime(i, format)
+	if err != nil {
+		return 0
+	}
+	return t.TimestampMilli()
 }

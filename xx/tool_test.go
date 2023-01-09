@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/test/gtest"
-	"github.com/zut/x/xlog"
 	"github.com/zut/x/xx"
 	"testing"
 )
@@ -160,8 +159,18 @@ func TestCopy(t *testing.T) {
 	})
 }
 
-func TestSafeFilename(t *testing.T) {
+func TestMsToStr(t *testing.T) {
 	gtest.C(t, func(t *gtest.T) {
-		xlog.Info(xx.SafeFilename("[]float64as[]float64as.jpg"))
+		t.Assert(xx.MsToStr(1580400000000, ""), "2020-01-31")      // 1580400000000
+		t.Assert(xx.MsToStr(1580400000000, "d/m/Y"), "31/01/2020") // 1580400000000
+	})
+}
+
+func TestStrToMs(t *testing.T) {
+	gtest.C(t, func(t *gtest.T) {
+		t1 := xx.StrToMs("2020-01-31", "") // 1580400000000
+		t.Assert(t1, 1580400000000)
+		t.Assert(t1, xx.StrToMs("31/01/2020", "d/m/Y"))
+		t.Assert(t1, xx.StrToMs("31/01/2020", ""))
 	})
 }
