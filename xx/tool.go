@@ -283,7 +283,7 @@ func SliceEqualST(a []string, b []string) bool { //contains
 	}
 	return true
 }
- 
+
 func SliceFloat64Equal(a []float64, b []float64) bool { //contains
 	return SliceEqual(gconv.SliceAny(a), gconv.SliceAny(b))
 }
@@ -648,6 +648,9 @@ func GetSF(s []float64, p int) float64 {
 	}
 	if p < 0 {
 		p = len(s) + p
+		if p < 0 || p >= len(s) {
+			return 999999
+		}
 	}
 	return s[p]
 }
@@ -657,6 +660,9 @@ func GetSInt(s []int, p int) int {
 	}
 	if p < 0 {
 		p = len(s) + p
+		if p < 0 || p >= len(s) {
+			return 999999
+		}
 	}
 	return s[p]
 }
