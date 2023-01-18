@@ -624,45 +624,42 @@ func FirstBool(s []bool, defaultValue ...bool) bool {
 	return false
 }
 
-func GetST(s []string, p int) string {
-	if p >= len(s) {
-		return "/"
-	}
+func GetST(s []string, p int, defaultValue ...string) string {
 	if p < 0 {
 		p = len(s) + p
+	}
+	if p < 0 || p >= len(s) {
+		if len(defaultValue)>0{
+			return defaultValue[0]
+		}
+		return "/"
 	}
 	return s[p]
 }
 func GetS(s []interface{}, p int) interface{} {
-	if p >= len(s) {
-		return ""
-	}
 	if p < 0 {
 		p = len(s) + p
+	}
+	if p < 0 || p >= len(s) {
+		return ""
 	}
 	return s[p]
 }
 func GetSF(s []float64, p int) float64 {
-	if p >= len(s) {
-		return 999999
-	}
 	if p < 0 {
 		p = len(s) + p
-		if p < 0 || p >= len(s) {
-			return 999999
-		}
+	}
+	if p < 0 || p >= len(s) {
+		return 999999
 	}
 	return s[p]
 }
 func GetSInt(s []int, p int) int {
-	if p >= len(s) {
-		return 999999
-	}
 	if p < 0 {
 		p = len(s) + p
-		if p < 0 || p >= len(s) {
-			return 999999
-		}
+	}
+	if p < 0 || p >= len(s) {
+		return 999999
 	}
 	return s[p]
 }

@@ -125,11 +125,11 @@ func (l *Logger) print(std io.Writer, lead string, value ...interface{}) {
 		// Caller path.
 		callerPath := ""
 		if l.config.Flags&F_FILE_LONG > 0 {
-			_, path, line := gdebug.CallerWithFilter(gPATH_FILTER_KEY, l.config.StSkip)
+			_, path, line := gdebug.CallerWithFilter([]string{"/os/glog/glog"}, l.config.StSkip)
 			callerPath = fmt.Sprintf(`%s:%d: `, path, line)
 		}
 		if l.config.Flags&F_FILE_SHORT > 0 {
-			_, path, line := gdebug.CallerWithFilter(gPATH_FILTER_KEY, l.config.StSkip)
+			_, path, line := gdebug.CallerWithFilter([]string{"/os/glog/glog"}, l.config.StSkip)
 			callerPath = fmt.Sprintf(`%s:%d: `, gfile.Basename(path), line)
 		}
 		if len(callerPath) > 0 {
