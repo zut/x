@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/flytam/filenamify"
-	"github.com/gogf/gf/os/gtime"
+	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/glog"
+	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/pkg/errors"
 	"image/png"
 	"math/rand"
@@ -14,15 +16,13 @@ import (
 	"sort"
 	"time"
 
-	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/test/gtest"
-	"github.com/gogf/gf/text/gregex"
-	"github.com/gogf/gf/text/gstr"
-	"github.com/gogf/gf/util/gconv"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/test/gtest"
+	"github.com/gogf/gf/v2/text/gregex"
+	"github.com/gogf/gf/v2/text/gstr"
+	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/labstack/gommon/color"
 	"github.com/vmihailenco/msgpack/v5"
-	"github.com/zut/x/vv"
-	"github.com/zut/x/xlog"
 )
 
 func Str(i interface{}) string {
@@ -35,8 +35,8 @@ func SubStr(str string, start int, length ...int) string {
 
 func TryExpect() {
 	if err := recover(); err != nil {
-		//xlog.Errorf("%s: %s", e, debug.Stack()) // line 20
-		xlog.Error(err)
+		//glog.Errorf("%s: %s", e, debug.Stack()) // line 20
+		glog.Error(gctx.New(), err)
 		for i := 0; ; i++ {
 			pc, file, line, ok := runtime.Caller(i)
 			if !ok {
@@ -80,7 +80,7 @@ func ReverseF64(s []float64) []float64 {
 }
 func IsPointer(value interface{}) {
 	if reflect.ValueOf(value).Kind() != reflect.Ptr {
-		xlog.Panic("v is not Pointer: " + Str(reflect.ValueOf(value).Kind()))
+		glog.Panic(gctx.New(), "v is not Pointer: "+Str(reflect.ValueOf(value).Kind()))
 	}
 }
 
@@ -90,11 +90,11 @@ func IsEmptyStr(i string) bool {
 }
 
 func Show(i interface{}) {
-	xlog.Info(i, "Skip1")
+	glog.Info(gctx.New(), i, "Skip1")
 	fmt.Println(color.Magenta(fmt.Sprintf("Type:(%T) +Value=(%+v)", i, i)))
 }
 func ShowBytes(i []byte) {
-	xlog.Info(ST{Str(i)}, vv.Skip1)
+	glog.Info(gctx.New(), ST{Str(i)})
 }
 func ShowDetail(i interface{}) {
 	fmt.Printf("Type:(%T) +Value=(%+v)\n", i, i)
@@ -195,7 +195,7 @@ func joinSep(sep string, removeEmptyStr int, s ...interface{}) string {
 		case float64:
 		case string:
 		default:
-			xlog.Panic("joinSep Type Error", GetType(i), i)
+			glog.Panic(gctx.New(), "joinSep Type Error", GetType(i), i)
 		}
 		s2 = append(s2, gstr.JoinAny(i, sep))
 	}
@@ -372,7 +372,7 @@ func EqualSI(a, b []int) bool {
 // If evaluates a condition, if true returns the first parameter otherwise the second
 func IfPanic(cdt bool, s ...interface{}) {
 	if cdt {
-		xlog.Panic(Str(s), vv.Skip1)
+		glog.Panic(gctx.New(), Str(s))
 	}
 }
 func If(cdt bool, a interface{}, b interface{}) interface{} {
@@ -629,7 +629,7 @@ func GetST(s []string, p int, defaultValue ...string) string {
 		p = len(s) + p
 	}
 	if p < 0 || p >= len(s) {
-		if len(defaultValue)>0{
+		if len(defaultValue) > 0 {
 			return defaultValue[0]
 		}
 		return "/"
@@ -727,7 +727,7 @@ func IdxSI(i int, s SI) int {
 			return n
 		}
 	}
-	xlog.Error("IdxSI Error", i, s)
+	glog.Error(gctx.New(), "IdxSI Error", i, s)
 	return -1
 }
 func IdxS(i interface{}, s S) int {
@@ -736,7 +736,7 @@ func IdxS(i interface{}, s S) int {
 			return n
 		}
 	}
-	xlog.Error("SIndex Error", i, s)
+	glog.Error(gctx.New(), "SIndex Error", i, s)
 	return -1
 }
 func SStrIndex(i string, s []string) int {
@@ -745,7 +745,7 @@ func SStrIndex(i string, s []string) int {
 			return n
 		}
 	}
-	xlog.Error("SStrIndex Error", ST{i}, s, vv.Skip2)
+	glog.Error(gctx.New(), "SStrIndex Error", ST{i}, s)
 	return -1
 }
 func SF64Index(i float64, s []float64) int {
@@ -754,7 +754,7 @@ func SF64Index(i float64, s []float64) int {
 			return n
 		}
 	}
-	xlog.Error("SStrIndex Error", i, s)
+	glog.Error(gctx.New(), "SStrIndex Error", i, s)
 	return -1
 }
 
@@ -801,7 +801,7 @@ func PrintMemUsage() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	// For info on each, see: https://golang.org/pkg/runtime/#MemStats
-	xlog.Debugf("Alloc = %vMB TotalAlloc = %vMB Sys = %vMB NumGC = %v",
+	glog.Debugf(gctx.New(), "Alloc = %vMB TotalAlloc = %vMB Sys = %vMB NumGC = %v",
 		bToMb(m.Alloc), bToMb(m.TotalAlloc), bToMb(m.Sys), m.NumGC)
 }
 
@@ -873,7 +873,7 @@ func SafeFilename(i string) string {
 		MaxLength:   200, // linux win max 256
 	})
 	if err != nil {
-		xlog.Warning(i, err)
+		glog.Warning(gctx.New(), i, err)
 		i2, _ = gregex.ReplaceString(`\W`, "_", i)
 	}
 	//后缀被干掉

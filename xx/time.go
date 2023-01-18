@@ -2,15 +2,16 @@ package xx
 
 import (
 	"fmt"
+	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/glog"
 	"os"
 	"time"
 
-	"github.com/gogf/gf/os/gtime"
+	"github.com/gogf/gf/v2/os/gtime"
 
-	"github.com/gogf/gf/os/gcache"
-	"github.com/gogf/gf/os/gfile"
-	"github.com/gogf/gf/util/gconv"
-	"github.com/zut/x/xlog"
+	"github.com/gogf/gf/v2/os/gcache"
+	"github.com/gogf/gf/v2/os/gfile"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 func T1(title ...interface{}) {
@@ -18,29 +19,30 @@ func T1(title ...interface{}) {
 		title = append(title, "Time")
 	}
 	key := Str(title[0])
-	_ = gcache.Set(key, time.Now(), 0) // 改成先进后出, 剥洋葱的方式, 嵌套多个
+	_ = gcache.Set(gctx.New(), key, time.Now(), 0) // 改成先进后出, 剥洋葱的方式, 嵌套多个
 }
 
 func T2(title ...interface{}) {
+	ctx := gctx.New()
 	if len(title) == 0 {
 		title = append(title, "Time")
 	}
 	key := Str(title[0])
-	i, err := gcache.Get(key)
+	i, err := gcache.Get(ctx, key)
 	if err != nil {
-		xlog.Error(err)
+		glog.Error(ctx, err)
 	}
 	elapsed := time.Since(gconv.Time(i))
-	xlog.Debug(key+" elapsed = ", elapsed, "Skip1")
+	glog.Debug(ctx, key+" elapsed = ", elapsed, "Skip1")
 	//if len(gt) == 0 || time.Duration(gconv.Int(gt[0]*1e9)) <= elapsed {
-	//	xlog.Debug("T2 elapsed = ", elapsed, "Skip1")
+	//	glog.Debug("T2 elapsed = ", elapsed, "Skip1")
 	//}
 }
 
-// Second
+// Sleep  Second
 func Sleep(s float64, show ...int) {
 	if FirstInt(show) == 1 {
-		xlog.Debug("Sleep", time.Nanosecond*time.Duration(int64(s*1e9)), "Skip1")
+		glog.Debug(gctx.New(), "Sleep", time.Nanosecond*time.Duration(int64(s*1e9)), "Skip1")
 	}
 	time.Sleep(time.Nanosecond * time.Duration(s*1e9))
 }
@@ -49,10 +51,10 @@ func Zzz(title ...string) {
 		return
 	}
 	if len(title) > 0 {
-		xlog.Info(title, "Skip1")
+		glog.Info(gctx.New(), title, "Skip1")
 	}
-	xlog.Warning("Zzz ... Sleep ... Zzz", "Skip1")
-	xlog.Info("Continue \n  1.Yes \n 2.Stop", "Skip1")
+	glog.Warning(gctx.New(), "Zzz ... Sleep ... Zzz", "Skip1")
+	glog.Info(gctx.New(), "Continue \n  1.Yes \n 2.Stop", "Skip1")
 	i := 0
 	_, _ = fmt.Scanln(&i)
 	if i != 1 {

@@ -3,12 +3,13 @@ package xdb
 import (
 	"context"
 	"fmt"
+	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/glog"
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/util/gconv"
-	"github.com/zut/x/xlog"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/zut/x/xx"
 )
 
@@ -27,13 +28,13 @@ func Open(HostPort ...string) error {
 		host = HostPort[0]
 		port = gconv.Int(HostPort[1])
 	} else if xx.FileExists("config.toml") || xx.FileExists("config/config.toml") {
-		host = g.Cfg().GetString("db.host")
-		port = g.Cfg().GetInt("db.port")
+		host = g.Cfg().MustGet(gctx.New(), "db.host").String()
+		port = g.Cfg().MustGet(gctx.New(), "db.port").Int()
 	}
 
-	xlog.Info("rdb Open", host, port)
+	glog.Info(gctx.New(), "rdb Open", host, port)
 	rdb = redis.NewClient(&redis.Options{
-		Addr: fmt.Sprintf("%v:%v", host, port),
+		Addr:         fmt.Sprintf("%v:%v", host, port),
 		DialTimeout:  10 * time.Second,
 		ReadTimeout:  20 * time.Second,
 		WriteTimeout: 20 * time.Second,
@@ -46,9 +47,9 @@ func Open(HostPort ...string) error {
 }
 
 func Close() {
-	xlog.Info("rdb Close", host, port)
+	glog.Info(gctx.New(), "rdb Close", host, port)
 	if err := rdb.Close(); err != nil {
-		xlog.Error("rdb", err)
+		glog.Error(gctx.New(), "rdb", err)
 	}
 }
 func Conn() *redis.Conn {
@@ -61,19 +62,19 @@ func Conn() *redis.Conn {
 			break
 		}
 		if err := conn.Close(); err != nil {
-			xlog.Error(i, "conn.Close()", err)
+			glog.Error(gctx.New(), i, "conn.Close()", err)
 		}
-		xlog.Debug(i, err)
+		glog.Debug(gctx.New(), i, err)
 		time.Sleep(time.Millisecond * 10) // 10ms
 	}
-	//xlog.Debug(rdb.PoolStats())
+	//glog.Debug(rdb.PoolStats())
 	return conn
 	//return rdb
 }
 func ConnClose(c *redis.Conn) {
-	//xlog.Debug("ConnClose")
+	//glog.Debug("ConnClose")
 	if err := c.Close(); err != nil {
-		xlog.Error(err, c.Info(ctx))
+		glog.Error(gctx.New(), err, c.Info(ctx))
 	}
 }
 func Info() string {
@@ -83,7 +84,7 @@ func Info() string {
 
 func FlushDB() {
 	// 删除当前选定数据库中的所有key。这个命令的执行不会失败。
-	xlog.Info("rdb FlushDB", host, port)
+	glog.Info(gctx.New(), "rdb FlushDB", host, port)
 	rdb.FlushDB(ctx)
 }
 
@@ -98,7 +99,7 @@ func AddKK(h string) string {
 func cEmpty(s ...string) error {
 	for _, i := range s {
 		if i == "" {
-			xlog.Errorf("Key.Empty")
+			glog.Errorf(gctx.New(), "Key.Empty")
 			return fmt.Errorf("Key.Empty")
 		}
 	}

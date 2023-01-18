@@ -2,11 +2,10 @@ package xx
 
 import (
 	"fmt"
-	"github.com/gogf/gf/text/gregex"
 	"math"
 	"sort"
 
-	"github.com/gogf/gf/util/gconv"
+	"github.com/gogf/gf/v2/util/gconv"
 	"gonum.org/v1/gonum/floats"
 	"gonum.org/v1/gonum/floats/scalar"
 )
@@ -21,13 +20,7 @@ func DiffOneValue(s []float64, v float64) []float64 {
 	}
 	return diff
 }
-func IntDiffOneValue(s []int, v int) []int {
-	diff := make([]int, len(s))
-	for n, i := range s {
-		diff[n] = gconv.Int(math.Abs(float64(i - v)))
-	}
-	return diff
-}
+
 func DiffTowSliceMax(s1, s2 []float64, validPercent ...float64) float64 {
 	if len(s1) != len(s2) {
 		return 1e6
@@ -41,7 +34,7 @@ func DiffTowSliceMax(s1, s2 []float64, validPercent ...float64) float64 {
 	}
 	sort.Float64s(diff)
 	validPos := gconv.Int(float64(len(s1)) * validPercent[0] / 100)
-	//xlog.Info(diff[validPos:len(diff)-1])
+	//glog.Info(diff[validPos:len(diff)-1])
 	return diff[validPos]
 }
 
@@ -62,7 +55,7 @@ func LogToLines(i []float64) []float64 {
 // 10 * math.Log10(i)
 func LineToLog(i float64) float64 {
 	if i <= 0 {
-		//xlog.Warningf("LineToLog(%v) Error %v", i, vv.Skip1)
+		//glog.Warningf("LineToLog(%v) Error %v", i, vv.Skip1)
 		return 0
 	}
 	a := 10 * math.Log10(i)
@@ -119,18 +112,6 @@ func F64(i interface{}) float64 {
 		return 1
 	}
 	return gconv.Float64(i)
-}
-func Int(i interface{}) int {
-	return gconv.Int(i)
-}
-func ReplaceAndInt(i interface{}) int {
-	if i2, err := gregex.ReplaceString(`\D`, "", Str(i)); err == nil && len(i2) > 0 {
-		return gconv.Int(i2)
-	}
-	return gconv.Int(i)
-}
-func Int64(i interface{}) int64 {
-	return gconv.Int64(i)
 }
 func F64s(s []string) []float64 {
 	s2 := make([]float64, len(s))
@@ -247,28 +228,6 @@ func ToMaxF64(y []float64, max float64) []float64 {
 	return y
 }
 
-func MinInt(i []int) int {
-	return gconv.Int(Min(gconv.Float64s(i)))
-}
-func MaxInt(i []int) int {
-	return gconv.Int(Max(gconv.Float64s(i)))
-}
-func InRangeInt(i, min, max int) int {
-	if i > max {
-		return max
-	} else if i < min {
-		return min
-	}
-	return i
-}
-func InRangeInt64(i, min, max int64) int64 {
-	if i > max {
-		return max
-	} else if i < min {
-		return min
-	}
-	return i
-}
 func InRangeF64(i, min, max float64) float64 {
 	if i > max {
 		return max
@@ -276,13 +235,6 @@ func InRangeF64(i, min, max float64) float64 {
 		return min
 	}
 	return i
-}
-
-func MaxIntIdx(s []int) int {
-	return floats.MaxIdx(gconv.Float64s(s))
-}
-func MinIntIdx(s []int) int {
-	return floats.MinIdx(gconv.Float64s(s))
 }
 
 func MaxIdx(s []float64) int {

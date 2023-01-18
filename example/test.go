@@ -9,13 +9,13 @@ import (
 )
 
 func main() {
-	dbPath := fmt.Sprintf("%v/x%v", xx.IfStr(runtime.GOOS == "darwin", "/Users/d/z", "/d/z"), "IP2LOCATION-LITE-DB3.BIN")
+	dbPath := fmt.Sprintf("%v/%v", xx.IfStr(runtime.GOOS == "darwin", "/Users/d/z", "/d/z"), "IP2LOCATION-LITE-DB3.BIN")
 	db, err := ip2location.OpenDB(dbPath)
 	if err != nil {
 		fmt.Print(err)
 		return
 	}
-	ip := "113.104.251a.44"
+	ip := "113.104.251.44"
 	results, err := db.Get_all(ip)
 
 	if err != nil {

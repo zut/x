@@ -1,19 +1,20 @@
 package xdb_test
 
 import (
-	"github.com/gogf/gf/test/gtest"
+	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/glog"
+	"github.com/gogf/gf/v2/test/gtest"
 	"github.com/zut/x/xdb"
-	"github.com/zut/x/xlog"
 	"testing"
 )
 
 func init() {
 	if err := xdb.Open(); err != nil {
-		xlog.Fatal(err)
+		glog.Fatal(gctx.New(), err)
 	}
 	//defer xdb.Close()
 	//xdb.FlushDB()
-	xlog.Info(xdb.Info())
+	glog.Info(gctx.New(), xdb.Info())
 }
 
 func TestOpen(t *testing.T) {

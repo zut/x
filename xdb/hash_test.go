@@ -1,8 +1,8 @@
 package xdb_test
 
 import (
-	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/test/gtest"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/test/gtest"
 	"github.com/zut/x/xdb"
 	"github.com/zut/x/xx"
 	"testing"

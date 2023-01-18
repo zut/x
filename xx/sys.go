@@ -2,7 +2,7 @@ package xx
 
 import (
 	"fmt"
-	"github.com/gogf/gf/os/gfile"
+	"github.com/gogf/gf/v2/os/gfile"
 	"runtime"
 
 	"github.com/ip2location/ip2location-go"

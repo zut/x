@@ -2,7 +2,7 @@ package xx_test
 
 import (
 	"fmt"
-	"github.com/gogf/gf/test/gtest"
+	"github.com/gogf/gf/v2/test/gtest"
 	"github.com/zut/x/xx"
 	"testing"
 )

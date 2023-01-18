@@ -2,8 +2,8 @@ package xx_test
 
 import (
 	"fmt"
-	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/test/gtest"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/test/gtest"
 	"github.com/zut/x/xx"
 	"testing"
 )
@@ -21,16 +21,6 @@ func TestRandomFloats(t *testing.T) {
 		fmt.Println(v0)
 		t.AssertGE(v0[0], 1)
 		t.AssertLE(v0[0], 2)
-	})
-}
-func TestMinInt(t *testing.T) {
-	gtest.C(t, func(t *gtest.T) {
-		v0 := xx.MinInt(xx.SI{1, 2, 3})
-		t.AssertEQ(1, v0)
-	})
-	gtest.C(t, func(t *gtest.T) {
-		v0 := xx.MinInt(xx.SI{1, 2, 3})
-		t.AssertEQ(1, v0)
 	})
 }
 

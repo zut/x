@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/gogf/gf/crypto/gaes"
+	"github.com/gogf/gf/v2/crypto/gaes"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
@@ -124,7 +124,7 @@ func Encrypt(plainText, key, iv string) (dst []byte, err error) {
 //	//if err != nil {
 //	//	return
 //	//}
-//	//xlog.Debugf("Save: %.2f%%", 100-100*float64(len(data))/float64(len(gconv.Bytes(src))))
+//	//glog.Debugf("Save: %.2f%%", 100-100*float64(len(data))/float64(len(gconv.Bytes(src))))
 //	return gaes.Encrypt(data, []byte("8byNbjJWdTlExWeWrFd0arLdSY8I1NrU"))
 //}
 

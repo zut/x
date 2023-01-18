@@ -2,7 +2,7 @@ package xdb
 
 import (
 	"fmt"
-	"github.com/gogf/gf/util/gconv"
+	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/zut/x/xx"
 	"math"
 )
