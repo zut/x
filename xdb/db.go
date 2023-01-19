@@ -3,7 +3,6 @@ package xdb
 import (
 	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/glog"
 	"time"
 
@@ -28,11 +27,11 @@ func Open(HostPort ...string) error {
 		host = HostPort[0]
 		port = gconv.Int(HostPort[1])
 	} else if xx.FileExists("config.toml") || xx.FileExists("config/config.toml") {
-		host = g.Cfg().MustGet(gctx.New(), "db.host").String()
-		port = g.Cfg().MustGet(gctx.New(), "db.port").Int()
+		host = g.Cfg().MustGet(context.TODO(), "db.host").String()
+		port = g.Cfg().MustGet(context.TODO(), "db.port").Int()
 	}
 
-	glog.Info(gctx.New(), "rdb Open", host, port)
+	glog.Info(context.TODO(), "rdb Open", host, port)
 	rdb = redis.NewClient(&redis.Options{
 		Addr:         fmt.Sprintf("%v:%v", host, port),
 		DialTimeout:  10 * time.Second,
@@ -47,9 +46,9 @@ func Open(HostPort ...string) error {
 }
 
 func Close() {
-	glog.Info(gctx.New(), "rdb Close", host, port)
+	glog.Info(context.TODO(), "rdb Close", host, port)
 	if err := rdb.Close(); err != nil {
-		glog.Error(gctx.New(), "rdb", err)
+		glog.Error(context.TODO(), "rdb", err)
 	}
 }
 func Conn() *redis.Conn {
@@ -62,9 +61,9 @@ func Conn() *redis.Conn {
 			break
 		}
 		if err := conn.Close(); err != nil {
-			glog.Error(gctx.New(), i, "conn.Close()", err)
+			glog.Error(context.TODO(), i, "conn.Close()", err)
 		}
-		glog.Debug(gctx.New(), i, err)
+		glog.Debug(context.TODO(), i, err)
 		time.Sleep(time.Millisecond * 10) // 10ms
 	}
 	//glog.Debug(rdb.PoolStats())
@@ -74,7 +73,7 @@ func Conn() *redis.Conn {
 func ConnClose(c *redis.Conn) {
 	//glog.Debug("ConnClose")
 	if err := c.Close(); err != nil {
-		glog.Error(gctx.New(), err, c.Info(ctx))
+		glog.Error(context.TODO(), err, c.Info(ctx))
 	}
 }
 func Info() string {
@@ -84,7 +83,7 @@ func Info() string {
 
 func FlushDB() {
 	// 删除当前选定数据库中的所有key。这个命令的执行不会失败。
-	glog.Info(gctx.New(), "rdb FlushDB", host, port)
+	glog.Info(context.TODO(), "rdb FlushDB", host, port)
 	rdb.FlushDB(ctx)
 }
 
@@ -99,7 +98,7 @@ func AddKK(h string) string {
 func cEmpty(s ...string) error {
 	for _, i := range s {
 		if i == "" {
-			glog.Errorf(gctx.New(), "Key.Empty")
+			glog.Errorf(context.TODO(), "Key.Empty")
 			return fmt.Errorf("Key.Empty")
 		}
 	}

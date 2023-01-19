@@ -1,9 +1,9 @@
 package xx
 
 import (
+	"context"
 	"encoding/hex"
 	"github.com/gogf/gf/v2/crypto/gsha1"
-	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/glog"
 	"github.com/gogf/gf/v2/util/gconv"
 	"golang.org/x/crypto/sha3"
@@ -24,7 +24,7 @@ func Sha3Bytes(v []byte) string {
 }
 
 func Sha3File(path string) string {
-	ctx := gctx.New()
+	ctx := context.TODO()
 	f, err := os.Open(path)
 	if err != nil {
 		glog.Panic(ctx, err)

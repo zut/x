@@ -1,8 +1,8 @@
 package xx
 
 import (
+	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/glog"
 	"os"
 	"time"
@@ -19,11 +19,11 @@ func T1(title ...interface{}) {
 		title = append(title, "Time")
 	}
 	key := Str(title[0])
-	_ = gcache.Set(gctx.New(), key, time.Now(), 0) // 改成先进后出, 剥洋葱的方式, 嵌套多个
+	_ = gcache.Set(context.TODO(), key, time.Now(), 0) // 改成先进后出, 剥洋葱的方式, 嵌套多个
 }
 
 func T2(title ...interface{}) {
-	ctx := gctx.New()
+	ctx := context.TODO()
 	if len(title) == 0 {
 		title = append(title, "Time")
 	}
@@ -42,7 +42,7 @@ func T2(title ...interface{}) {
 // Sleep  Second
 func Sleep(s float64, show ...int) {
 	if FirstInt(show) == 1 {
-		glog.Debug(gctx.New(), "Sleep", time.Nanosecond*time.Duration(int64(s*1e9)), "Skip1")
+		glog.Debug(context.TODO(), "Sleep", time.Nanosecond*time.Duration(int64(s*1e9)), "Skip1")
 	}
 	time.Sleep(time.Nanosecond * time.Duration(s*1e9))
 }
@@ -51,10 +51,10 @@ func Zzz(title ...string) {
 		return
 	}
 	if len(title) > 0 {
-		glog.Info(gctx.New(), title, "Skip1")
+		glog.Info(context.TODO(), title, "Skip1")
 	}
-	glog.Warning(gctx.New(), "Zzz ... Sleep ... Zzz", "Skip1")
-	glog.Info(gctx.New(), "Continue \n  1.Yes \n 2.Stop", "Skip1")
+	glog.Warning(context.TODO(), "Zzz ... Sleep ... Zzz", "Skip1")
+	glog.Info(context.TODO(), "Continue \n  1.Yes \n 2.Stop", "Skip1")
 	i := 0
 	_, _ = fmt.Scanln(&i)
 	if i != 1 {
