@@ -1,11 +1,10 @@
 package xx
 
 import (
-	"context"
 	"encoding/hex"
-	"github.com/gogf/gf/v2/crypto/gsha1"
-	"github.com/gogf/gf/v2/os/glog"
-	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/gogf/gf/crypto/gsha1"
+	"github.com/gogf/gf/util/gconv"
+	"github.com/zut/x/xlog"
 	"golang.org/x/crypto/sha3"
 	"io"
 	"os"
@@ -24,16 +23,15 @@ func Sha3Bytes(v []byte) string {
 }
 
 func Sha3File(path string) string {
-	ctx := context.TODO()
 	f, err := os.Open(path)
 	if err != nil {
-		glog.Panic(ctx, err)
+		xlog.Panic(err)
 	}
 	defer f.Close()
 	h := sha3.New256()
 	_, err = io.Copy(h, f)
 	if err != nil {
-		glog.Panic(ctx, err)
+		xlog.Panic(err)
 	}
 	return hex.EncodeToString(h.Sum(nil))
 }

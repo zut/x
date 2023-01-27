@@ -5,7 +5,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/gogf/gf/util/gconv"
 	"gonum.org/v1/gonum/floats"
 	"gonum.org/v1/gonum/floats/scalar"
 )
@@ -34,7 +34,7 @@ func DiffTowSliceMax(s1, s2 []float64, validPercent ...float64) float64 {
 	}
 	sort.Float64s(diff)
 	validPos := gconv.Int(float64(len(s1)) * validPercent[0] / 100)
-	//glog.Info(diff[validPos:len(diff)-1])
+	//xlog.Info(diff[validPos:len(diff)-1])
 	return diff[validPos]
 }
 
@@ -55,7 +55,7 @@ func LogToLines(i []float64) []float64 {
 // 10 * math.Log10(i)
 func LineToLog(i float64) float64 {
 	if i <= 0 {
-		//glog.Warningf("LineToLog(%v) Error %v", i, vv.Skip1)
+		//xlog.Warningf("LineToLog(%v) Error %v", i, vv.Skip1)
 		return 0
 	}
 	a := 10 * math.Log10(i)

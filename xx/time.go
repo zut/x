@@ -1,17 +1,16 @@
 package xx
 
 import (
-	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/os/glog"
+	"github.com/zut/x/xlog"
 	"os"
 	"time"
 
-	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/os/gtime"
 
-	"github.com/gogf/gf/v2/os/gcache"
-	"github.com/gogf/gf/v2/os/gfile"
-	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/gogf/gf/os/gcache"
+	"github.com/gogf/gf/os/gfile"
+	"github.com/gogf/gf/util/gconv"
 )
 
 func T1(title ...interface{}) {
@@ -19,30 +18,29 @@ func T1(title ...interface{}) {
 		title = append(title, "Time")
 	}
 	key := Str(title[0])
-	_ = gcache.Set(context.TODO(), key, time.Now(), 0) // 改成先进后出, 剥洋葱的方式, 嵌套多个
+	_ = gcache.Set(key, time.Now(), 0) // 改成先进后出, 剥洋葱的方式, 嵌套多个
 }
 
 func T2(title ...interface{}) {
-	ctx := context.TODO()
 	if len(title) == 0 {
 		title = append(title, "Time")
 	}
 	key := Str(title[0])
-	i, err := gcache.Get(ctx, key)
+	i, err := gcache.Get(key)
 	if err != nil {
-		glog.Error(ctx, err)
+		xlog.Error(err)
 	}
 	elapsed := time.Since(gconv.Time(i))
-	glog.Debug(ctx, key+" elapsed = ", elapsed, "Skip1")
+	xlog.Debug(key+" elapsed = ", elapsed, "Skip1")
 	//if len(gt) == 0 || time.Duration(gconv.Int(gt[0]*1e9)) <= elapsed {
-	//	glog.Debug("T2 elapsed = ", elapsed, "Skip1")
+	//	xlog.Debug("T2 elapsed = ", elapsed, "Skip1")
 	//}
 }
 
 // Sleep  Second
 func Sleep(s float64, show ...int) {
 	if FirstInt(show) == 1 {
-		glog.Debug(context.TODO(), "Sleep", time.Nanosecond*time.Duration(int64(s*1e9)), "Skip1")
+		xlog.Debug("Sleep", time.Nanosecond*time.Duration(int64(s*1e9)), "Skip1")
 	}
 	time.Sleep(time.Nanosecond * time.Duration(s*1e9))
 }
@@ -51,10 +49,10 @@ func Zzz(title ...string) {
 		return
 	}
 	if len(title) > 0 {
-		glog.Info(context.TODO(), title, "Skip1")
+		xlog.Info(title, "Skip1")
 	}
-	glog.Warning(context.TODO(), "Zzz ... Sleep ... Zzz", "Skip1")
-	glog.Info(context.TODO(), "Continue \n  1.Yes \n 2.Stop", "Skip1")
+	xlog.Warning("Zzz ... Sleep ... Zzz", "Skip1")
+	xlog.Info("Continue \n  1.Yes \n 2.Stop", "Skip1")
 	i := 0
 	_, _ = fmt.Scanln(&i)
 	if i != 1 {

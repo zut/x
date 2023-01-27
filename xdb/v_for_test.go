@@ -1,8 +1,8 @@
 package xdb_test
 
 import (
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/grand"
+	"github.com/gogf/gf/frame/g"
+	"github.com/gogf/gf/util/grand"
 	"math"
 )
 

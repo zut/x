@@ -2,7 +2,7 @@ package xdb
 
 import (
 	"fmt"
-	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/gogf/gf/util/gconv"
 	"github.com/zut/x/xx"
 	"time"
 )
@@ -57,7 +57,7 @@ func GetTo(k string, v interface{}) error {
 	defer ConnClose(c)
 	str, err := c.Get(ctx, k).Result()
 	if err != nil {
-		//glog.Info("GetGo", k, err)
+		//xlog.Info("GetGo", k, err)
 		return err
 	}
 	return xx.UnpackTo(gconv.Bytes(str), &v)

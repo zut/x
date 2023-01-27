@@ -2,12 +2,11 @@ package xx
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"github.com/flytam/filenamify"
-	"github.com/gogf/gf/v2/os/glog"
-	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/os/gtime"
 	"github.com/pkg/errors"
+	"github.com/zut/x/xlog"
 	"image/png"
 	"math/rand"
 	"os"
@@ -16,11 +15,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/test/gtest"
-	"github.com/gogf/gf/v2/text/gregex"
-	"github.com/gogf/gf/v2/text/gstr"
-	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/gogf/gf/frame/g"
+	"github.com/gogf/gf/test/gtest"
+	"github.com/gogf/gf/text/gregex"
+	"github.com/gogf/gf/text/gstr"
+	"github.com/gogf/gf/util/gconv"
 	"github.com/labstack/gommon/color"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -35,8 +34,8 @@ func SubStr(str string, start int, length ...int) string {
 
 func TryExpect() {
 	if err := recover(); err != nil {
-		//glog.Errorf("%s: %s", e, debug.Stack()) // line 20
-		glog.Error(context.TODO(), err)
+		//xlog.Errorf("%s: %s", e, debug.Stack()) // line 20
+		xlog.Error(err)
 		for i := 0; ; i++ {
 			pc, file, line, ok := runtime.Caller(i)
 			if !ok {
@@ -80,7 +79,7 @@ func ReverseF64(s []float64) []float64 {
 }
 func IsPointer(value interface{}) {
 	if reflect.ValueOf(value).Kind() != reflect.Ptr {
-		glog.Panic(context.TODO(), "v is not Pointer: "+Str(reflect.ValueOf(value).Kind()))
+		xlog.Panic("v is not Pointer: " + Str(reflect.ValueOf(value).Kind()))
 	}
 }
 
@@ -90,11 +89,11 @@ func IsEmptyStr(i string) bool {
 }
 
 func Show(i interface{}) {
-	glog.Info(context.TODO(), i, "Skip1")
+	xlog.Info(i, "Skip1")
 	fmt.Println(color.Magenta(fmt.Sprintf("Type:(%T) +Value=(%+v)", i, i)))
 }
 func ShowBytes(i []byte) {
-	glog.Info(context.TODO(), ST{Str(i)})
+	xlog.Info(ST{Str(i)})
 }
 func ShowDetail(i interface{}) {
 	fmt.Printf("Type:(%T) +Value=(%+v)\n", i, i)
@@ -195,7 +194,7 @@ func joinSep(sep string, removeEmptyStr int, s ...interface{}) string {
 		case float64:
 		case string:
 		default:
-			glog.Panic(context.TODO(), "joinSep Type Error", GetType(i), i)
+			xlog.Panic("joinSep Type Error", GetType(i), i)
 		}
 		s2 = append(s2, gstr.JoinAny(i, sep))
 	}
@@ -372,7 +371,7 @@ func EqualSI(a, b []int) bool {
 // If evaluates a condition, if true returns the first parameter otherwise the second
 func IfPanic(cdt bool, s ...interface{}) {
 	if cdt {
-		glog.Panic(context.TODO(), Str(s))
+		xlog.Panic(Str(s))
 	}
 }
 func If(cdt bool, a interface{}, b interface{}) interface{} {
@@ -727,7 +726,7 @@ func IdxSI(i int, s SI) int {
 			return n
 		}
 	}
-	glog.Error(context.TODO(), "IdxSI Error", i, s)
+	xlog.Error("IdxSI Error", i, s)
 	return -1
 }
 func IdxS(i interface{}, s S) int {
@@ -736,7 +735,7 @@ func IdxS(i interface{}, s S) int {
 			return n
 		}
 	}
-	glog.Error(context.TODO(), "SIndex Error", i, s)
+	xlog.Error("SIndex Error", i, s)
 	return -1
 }
 func SStrIndex(i string, s []string) int {
@@ -745,7 +744,7 @@ func SStrIndex(i string, s []string) int {
 			return n
 		}
 	}
-	glog.Error(context.TODO(), "SStrIndex Error", ST{i}, s)
+	xlog.Error("SStrIndex Error", ST{i}, s)
 	return -1
 }
 func SF64Index(i float64, s []float64) int {
@@ -754,7 +753,7 @@ func SF64Index(i float64, s []float64) int {
 			return n
 		}
 	}
-	glog.Error(context.TODO(), "SStrIndex Error", i, s)
+	xlog.Error("SStrIndex Error", i, s)
 	return -1
 }
 
@@ -801,7 +800,7 @@ func PrintMemUsage() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	// For info on each, see: https://golang.org/pkg/runtime/#MemStats
-	glog.Debugf(context.TODO(), "Alloc = %vMB TotalAlloc = %vMB Sys = %vMB NumGC = %v",
+	xlog.Debugf("Alloc = %vMB TotalAlloc = %vMB Sys = %vMB NumGC = %v",
 		bToMb(m.Alloc), bToMb(m.TotalAlloc), bToMb(m.Sys), m.NumGC)
 }
 
@@ -873,7 +872,7 @@ func SafeFilename(i string) string {
 		MaxLength:   200, // linux win max 256
 	})
 	if err != nil {
-		glog.Warning(context.TODO(), i, err)
+		xlog.Warning(i, err)
 		i2, _ = gregex.ReplaceString(`\W`, "_", i)
 	}
 	//后缀被干掉

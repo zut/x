@@ -1,8 +1,8 @@
 package xx
 
 import (
-	"github.com/gogf/gf/v2/text/gregex"
-	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/gogf/gf/text/gregex"
+	"github.com/gogf/gf/util/gconv"
 )
 
 func MinInt(s []int) int {

@@ -1,6 +1,6 @@
 package xx
 
-import "github.com/gogf/gf/v2/container/gset"
+import "github.com/gogf/gf/container/gset"
 
 func IntersectSize(a, b []string) int {
 	s1 := gset.NewStrSetFrom(a)

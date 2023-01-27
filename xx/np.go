@@ -90,7 +90,7 @@ func Split01(src []float64) [][]float64 {
 	endN := len(src) - 1
 	for n, i := range src {
 		//if n == len(src)-2 {
-		//	glog.Info(i)
+		//	xlog.Info(i)
 		//}
 		if last != i { // 不同,改变了
 			if n != 0 { // 第一个不要进来

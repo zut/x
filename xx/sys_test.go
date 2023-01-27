@@ -1,17 +1,16 @@
 package xx
 
 import (
-	"context"
-	"github.com/gogf/gf/v2/os/glog"
+	"github.com/zut/x/xlog"
 	"testing"
 
-	"github.com/gogf/gf/v2/test/gtest"
+	"github.com/gogf/gf/test/gtest"
 )
 
 func TestGetDiskInfo(t *testing.T) {
 	gtest.C(t, func(t *gtest.T) {
 		a := GetPsInfo()
-		glog.Info(context.TODO(), a)
+		xlog.Info(a)
 	})
 }
 
@@ -22,7 +21,7 @@ func TestIp2Location(t *testing.T) {
 			"27.38.155.8",
 			"163.125.234.241",
 		})
-		glog.Info(context.TODO(), s)
-		glog.Info(context.TODO(), err)
+		xlog.Info(s)
+		xlog.Info(err)
 	})
 }
