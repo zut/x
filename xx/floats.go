@@ -2,6 +2,7 @@ package xx
 
 import (
 	"fmt"
+	"github.com/gogf/gf/text/gregex"
 	"math"
 	"sort"
 
@@ -99,6 +100,13 @@ func YListP2PSum(yList [][]float64) []float64 {
 	}
 	return ySum
 }
+func ClearAndF64(i interface{}) float64 {
+	s, err := gregex.MatchString(`[+\-]\d[\d\.]*`, gconv.String(i))
+	if err == nil && len(s) > 0 {
+		return gconv.Float64(s[0])
+	}
+	return gconv.Float64(i)
+}
 func F64(i interface{}) float64 {
 	// NAV returned by FETCh and Calculate: Measurement state OFF
 	// NCAP returned by FETCh and Calculate: Disabled view
@@ -195,7 +203,7 @@ func Max(s []float64) float64 {
 	return IfF64(math.IsInf(a, 0), 999999, a)
 }
 
-func Max2(s ...float64) float64 {
+func MaxF64(s ...float64) float64 {
 	if len(s) == 0 {
 		return 999999
 	}
@@ -209,32 +217,36 @@ func Min(s []float64) float64 {
 	a := floats.Min(s)
 	return IfF64(math.IsNaN(a), 999999, a)
 }
-func Min2(s ...float64) float64 {
+func MinF64(s ...float64) float64 {
 	if len(s) == 0 {
 		return 999999
 	}
 	return floats.Min(s)
 }
-func ToMinF64(y []float64, min float64) []float64 {
+func ToMinF64(y []float64, minVal float64) []float64 {
 	for n, i := range y {
-		y[n] = Max2(i, min)
+		y[n] = MaxF64(i, minVal)
 	}
 	return y
 }
-func ToMaxF64(y []float64, max float64) []float64 {
+func ToMaxF64(y []float64, maxVal float64) []float64 {
 	for n, i := range y {
-		y[n] = Min2(i, max)
+		y[n] = MinF64(i, maxVal)
 	}
 	return y
 }
 
-func InRangeF64(i, min, max float64) float64 {
-	if i > max {
-		return max
-	} else if i < min {
-		return min
+func InRangeF64(i, minVal, maxVal float64) float64 {
+	if i > maxVal {
+		return maxVal
+	} else if i < minVal {
+		return minVal
 	}
 	return i
+}
+
+func IsInRangeF64(i, minVal, maxVal float64) bool {
+	return i >= minVal && i <= maxVal
 }
 
 func MaxIdx(s []float64) int {
@@ -262,12 +274,11 @@ func Float64sSort(s []float64) []float64 {
 	return d
 }
 
-// max > min
+// Float64sSortMaxToMin max > min
 func Float64sSortMaxToMin(s []float64) []float64 {
 	return ReverseF64(Float64sSort(s))
 }
 
-// min > max
 func Avg(s []float64) float64 {
 	return floats.Sum(s) / F64(len(s))
 }
@@ -276,36 +287,40 @@ func Abs(a float64) float64 {
 	return math.Abs(a)
 }
 
-// Sum
+// Sum Sum
 func Sum(s []float64) float64 {
 	return floats.Sum(s)
 }
 
-// min > max
+// ArgSort min > max
 func ArgSort(s []float64) []int {
 	idx := make([]int, len(s))
 	floats.Argsort(CopySF64(s), idx)
 	return idx
 }
 
-// max > min
+// ArgSortMaxToMin max > min
 func ArgSortMaxToMin(s []float64) []int {
 	return IntListReverse(ArgSort(s))
 }
-func Float64sAddRandom(i []float64, min float64, max float64, decimals ...int) []float64 {
+func Float64sAddRandom(i []float64, x1 float64, x2 float64, decimals ...int) []float64 {
 	i2 := make([]float64, len(i))
 	for index, value := range i {
-		i2[index] = Round(value+RandomF64(min, max), decimals...)
+		i2[index] = Round(value+RandomF64(x1, x2), decimals...)
 	}
 	return i2
 }
 
-// decimals: 2
+func ZFill(i float64, decimals int) string {
+	return fmt.Sprintf(fmt.Sprintf("%%.%vf", decimals), i)
+}
+
+// Round decimals: 6
 func Round(i float64, decimals ...int) float64 {
 	return scalar.Round(i, OrInt(6, decimals...))
 }
 
-// Round 1
+// R0 Round 1
 func R0(i float64) float64 {
 	return scalar.Round(i, 0)
 }
@@ -499,4 +514,39 @@ func CompareF64(a, b float64, Operation string) bool {
 		return a > b
 	}
 	return false
+}
+
+func PermutationsInt(s []int) [][]int {
+	var helper func([]int, int)
+	var res [][]int
+	helper = func(arr []int, n int) {
+		if n == 1 {
+			tmp := make([]int, len(arr))
+			copy(tmp, arr)
+			res = append(res, tmp)
+		} else {
+			for i := 0; i < n; i++ {
+				helper(arr, n-1)
+				if n%2 == 1 {
+					tmp := arr[i]
+					arr[i] = arr[n-1]
+					arr[n-1] = tmp
+				} else {
+					tmp := arr[0]
+					arr[0] = arr[n-1]
+					arr[n-1] = tmp
+				}
+			}
+		}
+	}
+	helper(s, len(s))
+	return res
+}
+
+func MakeFloat64(length int, v float64) []float64 {
+	s := make([]float64, length)
+	for i := range s {
+		s[i] = v
+	}
+	return s
 }

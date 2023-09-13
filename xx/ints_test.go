@@ -34,10 +34,10 @@ func TestMaxIntIdx(t *testing.T) {
 
 func TestMinMaxInt(t *testing.T) {
 	gtest.C(t, func(t *gtest.T) {
-		min, minIdx, max, maxIdx := xx.MinMaxInt(xx.SI{1, 2, 3})
-		t.AssertEQ(1, min)
+		minX, minIdx, maxX, maxIdx := xx.MinMaxInt(xx.SI{1, 2, 3})
+		t.AssertEQ(1, minX)
 		t.AssertEQ(0, minIdx)
-		t.AssertEQ(3, max)
+		t.AssertEQ(3, maxX)
 		t.AssertEQ(2, maxIdx)
 	})
 }

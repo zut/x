@@ -68,7 +68,7 @@ func HGetInt64(h, k string) (v int64, err error) {
 	return
 }
 
-func hGetAllOriginal(h string) (map[string]string, error) {
+func HGetAllOriginal(h string) (map[string]string, error) {
 	if err := cEmpty(h); err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func hGetAllOriginal(h string) (map[string]string, error) {
 }
 
 func HGetAll(h string) (map[string]interface{}, error) {
-	m, err := hGetAllOriginal(h)
+	m, err := HGetAllOriginal(h)
 	if err != nil {
 		return nil, err
 	}
@@ -94,45 +94,29 @@ func HGetAll(h string) (map[string]interface{}, error) {
 }
 
 func HGetAllMapStrInt(h string) (map[string]int, error) {
-	m, err := hGetAllOriginal(h)
+	m, err := HGetAllOriginal(h)
 	if err != nil {
 		return nil, err
 	}
 	m2 := make(map[string]int, len(m))
 	for k, v := range m {
-		var a int
-		if err := xx.UnpackTo(gconv.Bytes(v), &a); err != nil {
-			return nil, err
-		}
-		m2[k] = a
+		m2[k] = xx.Int(v)
 	}
 	return m2, err
 }
 
-func HGetAllMapStrInt64(h string) (map[string]int64, error) {
-	m, err := hGetAllOriginal(h)
-	if err != nil {
-		return nil, err
-	}
-	m2 := make(map[string]int64, len(m))
-	for k, v := range m {
-		var a int64
-		if err := xx.UnpackTo(gconv.Bytes(v), &a); err != nil {
-			return nil, err
-		}
-		m2[k] = a
-	}
-	return m2, err
-}
-
-func HGetTo(h, k string, v interface{}) error {
+func HGetNotUnpack(h, k string) (string, error) {
 	if err := cEmpty(h, k); err != nil {
-		return err
+		return "", err
 	}
-	xx.IsPointer(v)
 	c := Conn()
 	defer ConnClose(c)
 	str, err := c.HGet(ctx, h, k).Result()
+
+	return str, err
+}
+func HGetTo(h, k string, v interface{}) error {
+	str, err := HGetNotUnpack(h, k)
 	if err != nil {
 		return err
 	}

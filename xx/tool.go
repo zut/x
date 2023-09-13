@@ -14,6 +14,7 @@ import (
 	"runtime"
 	"sort"
 	"time"
+	"unicode"
 
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/test/gtest"
@@ -30,6 +31,26 @@ func Str(i interface{}) string {
 
 func SubStr(str string, start int, length ...int) string {
 	return gstr.SubStr(str, start, length...)
+}
+
+// 返回一个字符串的前 n 个字符，其中中文字符的长度为 2：
+func SubStringHan(s string, n int) string {
+	runes := []rune(s)
+	if len(runes) <= n {
+		return s
+	}
+	var length int
+	for i := range runes {
+		if length >= n {
+			return string(runes[:i])
+		}
+		if unicode.Is(unicode.Scripts["Han"], runes[i]) {
+			length += 2
+		} else {
+			length++
+		}
+	}
+	return string(runes)
 }
 
 func TryExpect() {
@@ -77,15 +98,24 @@ func ReverseF64(s []float64) []float64 {
 	}
 	return d
 }
-func IsPointer(value interface{}) {
-	if reflect.ValueOf(value).Kind() != reflect.Ptr {
-		xlog.Panic("v is not Pointer: " + Str(reflect.ValueOf(value).Kind()))
+func IsPointer(value interface{}) error {
+	k := reflect.ValueOf(value).Kind()
+	if k != reflect.Ptr {
+		return errors.Errorf("v is not Pointer: %v", Str(k))
 	}
+	return nil
 }
 
 // IsEmptyStr gregex.IsMatchString(`^\s*$`, i)
 func IsEmptyStr(i string) bool {
 	return gregex.IsMatchString(`^\s*$`, i)
+}
+
+func IsUuid(i string) bool {
+	// 标准的UUID格式为：123e4567-e89b-12d3-a456-426655440000 (8-4-4-4-12)
+	// 简单校验
+	//return gregex.IsMatchString(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`, i)
+	return gregex.IsMatchString(`^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$`, i)
 }
 
 func Show(i interface{}) {
@@ -126,6 +156,16 @@ func RandomLetter(length int) string {
 	}
 	return string(b)
 }
+func RandomLetterLower(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+	var seededRand = rand.New(
+		rand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
 func RandomNumber(length int) string {
 	const charset = "0123456789"
 	var seededRand = rand.New(
@@ -136,24 +176,26 @@ func RandomNumber(length int) string {
 	}
 	return string(b)
 }
-func RandomF64(min, max float64, decimals ...int) float64 {
-	rand.Seed(time.Now().UnixNano())
-	v := min + rand.Float64()*(max-min)
+
+// RandomF64 decimals default 6
+func RandomF64(x1, x2 float64, decimals ...int) float64 {
+	//rand.Seed(time.Now().UnixNano())
+	v := x1 + rand.Float64()*(x2-x1)
 	return IfF64(len(decimals) > 0, Round(v, decimals...), v)
 }
 
-func RandomF64s(min, max float64, n int, decimals ...int) []float64 {
+func RandomF64s(x1, x2 float64, n int, decimals ...int) []float64 {
 	s := make([]float64, n)
 	for i := range s {
-		s[i] = RandomF64(min, max, decimals...)
+		s[i] = RandomF64(x1, x2, decimals...)
 	}
 	return s
 }
 
 // RandomInt [min to max] (include min max)
-func RandomInt(min, max int) int {
-	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(max-min+1) + min
+func RandomInt(x1, x2 int) int {
+	//rand.Seed(time.Now().UnixNano())
+	return x1 + rand.Intn(x2-x1+1)
 }
 func RandomInSF64(s ...float64) float64 {
 	return s[RandomInt(0, len(s)-1)]
@@ -162,10 +204,32 @@ func RandomIntInSI(s []int) int {
 	return s[RandomInt(0, len(s)-1)]
 }
 
-func RandomIntS(min, max int, n int) []int {
+func RandomSliceIntUnique(x1, x2, count int) []int {
+	// 唯一, 不重复的随机数, 无排序 > [10 0 6 5 2 7 1 9 4 3]
+	// 校验参数合法性
+	if count <= 0 || (x2-x1+1) < count {
+		return []int{}
+	}
+	// 初始化随机种子
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	// 定义结果数组和已生成的随机数集合
+	res := make([]int, 0, count)
+	numMap := make(map[int]bool)
+	for len(res) < count {
+		num := r.Intn(x2-x1+1) + x1
+		// 判断是否已经生成过该数，如果没有则添加到结果数组和集合中
+		if !numMap[num] {
+			numMap[num] = true
+			res = append(res, num)
+		}
+	}
+	return res
+}
+
+func RandomIntS(x1, x2 int, n int) []int {
 	s := make([]int, n)
 	for i := range s {
-		s[i] = RandomInt(min, max)
+		s[i] = RandomInt(x1, x2)
 	}
 	return s
 }
@@ -488,23 +552,23 @@ func TestAssert12(t *gtest.T, e1, e2 error, v0, v1, v2 interface{}) {
 }
 
 // InInt value in Min Max
-func InInt(i, min, max int) int {
-	if i < min {
-		i = min
+func InInt(i, x1, x2 int) int {
+	if i < x1 {
+		i = x1
 	}
-	if i > max {
-		i = max
+	if i > x2 {
+		i = x2
 	}
 	return i
 }
 
 // InF64 value in Min Max
-func InF64(i, min, max float64) float64 {
-	if i < min {
-		i = min
+func InF64(i, x1, x2 float64) float64 {
+	if i < x1 {
+		i = x1
 	}
-	if i > max {
-		i = max
+	if i > x2 {
+		i = x2
 	}
 	return i
 }
@@ -684,31 +748,31 @@ func Cross2Line(x1, x2, y1, y2 float64) bool {
 	}
 	return false
 }
-func CrossPoint(s []float64, limit float64) (int, []int) {
+func CrossPosList(s []float64, limit float64) []int {
 	last := 0.0
-	crossPoint := 0
 	crossPosList := SI{}
-
 	for n := range s {
 		i := s[n]
 		if n == 0 {
 			last = i
 			continue
 		}
-		if last > limit && i < limit {
-			crossPoint++
+		if i == limit {
+			crossPosList = append(crossPosList, n)
+			last = i
+			//fmt.Println(crossPoint,last, limit, i)
+		} else if last > limit && i < limit {
 			crossPosList = append(crossPosList, n)
 			//fmt.Println(crossPoint,last, limit, i)
 		} else if last < limit && i > limit {
-			crossPoint++
-			crossPosList = append(crossPosList, n)
+			crossPosList = append(crossPosList, n-1) // 要小于的那个点
 			//fmt.Println(crossPoint,last, limit, i)
 		}
-		if i != limit {
+		if i != limit && i != last {
 			last = i
 		}
 	}
-	return crossPoint, crossPosList
+	return crossPosList
 }
 func Copy(src interface{}, dst interface{}) error {
 	IsPointer(dst)
@@ -835,12 +899,23 @@ func RemoveItemInST(s []string, removeItem string) []string {
 	}
 	return s2
 }
-func RemoveDuplicateInt(intSlice []int) []int {
-	allKeys := make(map[int]bool)
+func RemoveDuplicateInt(s []int) []int {
+	m := make(map[int]bool)
 	var s2 []int
-	for _, item := range intSlice {
-		if _, value := allKeys[item]; !value {
-			allKeys[item] = true
+	for _, item := range s {
+		if _, ok := m[item]; !ok {
+			m[item] = true
+			s2 = append(s2, item)
+		}
+	}
+	return s2
+}
+func RemoveDuplicateFloat64(s []float64) []float64 {
+	m := make(map[float64]bool)
+	var s2 []float64
+	for _, item := range s {
+		if _, ok := m[item]; !ok {
+			m[item] = true
 			s2 = append(s2, item)
 		}
 	}
@@ -873,7 +948,8 @@ func SafeFilename(i string) string {
 	})
 	if err != nil {
 		xlog.Warning(i, err)
-		i2, _ = gregex.ReplaceString(`\W`, "_", i)
+		//i2, _ = gregex.ReplaceString(`\W`, "_", i)
+		i2, _ = gregex.ReplaceString(`[<>:"/\\|?*\x00-\x1F]`, "_", i)
 	}
 	//后缀被干掉
 	s, err := gregex.MatchString(`\.[a-zA-Z0-9]{1,10}$`, i)
@@ -919,4 +995,15 @@ func StrToMs(i string, format string) int64 {
 		return 0
 	}
 	return t.TimestampMilli()
+}
+
+func SliceStrRepeat(i string, num int) []string {
+	if num <= 0 {
+		return nil
+	}
+	s := make([]string, num)
+	for n := 0; n < num; n++ {
+		s[n] = i
+	}
+	return s
 }

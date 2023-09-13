@@ -102,6 +102,7 @@ func DecryptUnCompressUnpackTo(src []byte, dst interface{}, key string) (err err
 	IsPointer(dst)
 	var data []byte
 	if data, err = gaes.Decrypt(src, []byte(key)); err != nil {
+		fmt.Println( err)
 		return
 	}
 	return UnCompressUnpackTo(data, dst)

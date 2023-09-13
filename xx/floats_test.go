@@ -7,6 +7,18 @@ import (
 	"testing"
 )
 
+func Test_ClearAndF64(t *testing.T) {
+	gtest.C(t, func(t *gtest.T) {
+		t.AssertEQ(xx.ClearAndF64("999"), 999.0)
+		t.AssertEQ(xx.ClearAndF64("0.1235"), 0.1235)
+		t.AssertEQ(xx.ClearAndF64("-0.1235"), -0.1235)
+		t.AssertEQ(xx.ClearAndF64("+0.1235"), 0.1235)
+		t.AssertEQ(xx.ClearAndF64(" -0.1235 "), -0.1235)
+		t.AssertEQ(xx.ClearAndF64(" +0.1235 "), 0.1235)
+		t.AssertEQ(xx.ClearAndF64(" -0.12---35 "), -0.12)
+		t.AssertEQ(xx.ClearAndF64(" +0.12+++35 "), 0.12)
+	})
+}
 func Test_FloatsDiff(t *testing.T) {
 	gtest.C(t, func(t *gtest.T) {
 		s1 := []float64{1, 2, 3}
