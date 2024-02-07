@@ -105,6 +105,7 @@ func cEmpty(s ...string) error {
 	return nil
 }
 
+// VersionHashName "%v_%v", hashName, "Version"
 func VersionHashName(hashName string) string {
 	return fmt.Sprintf("%v_%v", hashName, "Version")
 }

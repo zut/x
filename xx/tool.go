@@ -13,6 +13,7 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
+	"strings"
 	"time"
 	"unicode"
 
@@ -27,6 +28,12 @@ import (
 
 func Str(i interface{}) string {
 	return gconv.String(i)
+}
+func Capitalize(i string) string {
+	if len(i) == 0 {
+		return i
+	}
+	return strings.ToUpper(i[0:1]) + strings.ToLower(i[1:])
 }
 
 func SubStr(str string, start int, length ...int) string {

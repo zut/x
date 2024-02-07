@@ -250,6 +250,9 @@ func IsInRangeF64(i, minVal, maxVal float64) bool {
 }
 
 func MaxIdx(s []float64) int {
+	if len(s) == 0 {
+		return 0
+	}
 	return floats.MaxIdx(s)
 }
 func MinIdx(s []float64) int {

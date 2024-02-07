@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	dbPath := fmt.Sprintf("%v/%v", xx.IfStr(runtime.GOOS == "darwin", "/Users/d/z", "/d/z"), "IP2LOCATION-LITE-DB3.BIN")
 	db, err := ip2location.OpenDB(dbPath)
 	if err != nil {
@@ -27,6 +26,5 @@ func main() {
 	fmt.Printf("country_long: %s\n", results.Country_long)
 	fmt.Printf("region: %s\n", results.Region)
 	fmt.Printf("city: %s\n", results.City)
-
 	db.Close()
 }

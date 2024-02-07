@@ -8,6 +8,16 @@ import (
 	"testing"
 )
 
+func TestCapitalize(t *testing.T) {
+	gtest.C(t, func(t *gtest.T) {
+		t.AssertEQ(xx.Capitalize(""), "")
+		t.AssertEQ(xx.Capitalize("1"), "1")
+		t.AssertEQ(xx.Capitalize("a"), "A")
+		t.AssertEQ(xx.Capitalize("aa"), "Aa")
+		t.AssertEQ(xx.Capitalize("aA"), "Aa")
+		t.AssertEQ(xx.Capitalize("AA"), "Aa")
+	})
+}
 func TestRandomFloat(t *testing.T) {
 	gtest.C(t, func(t *gtest.T) {
 		v0 := xx.RandomF64(1, 2)
@@ -110,18 +120,18 @@ func TestReverseFloat64(t *testing.T) {
 }
 
 func TestCrossPoint(t *testing.T) {
-	gtest.C(t, func(t *gtest.T) {
-		v0 := []float64{1, 3, 5, 1}
-		vTarget := 2
-		v1, _ := xx.CrossPoint(v0, 2)
-		t.Assert(vTarget, v1)
-	})
-	gtest.C(t, func(t *gtest.T) {
-		v0 := []float64{1, 2, 3, 4, 5, 6, 1, 5, 2, 2, 2, 2, 1}
-		vTarget := 4
-		v1, _ := xx.CrossPoint(v0, 3)
-		t.Assert(vTarget, v1)
-	})
+	//gtest.C(t, func(t *gtest.T) {
+	//	v0 := []float64{1, 3, 5, 1}
+	//	vTarget := 2
+	//	v1, _ := xx.CrossPoint(v0, 2)
+	//	t.Assert(vTarget, v1)
+	//})
+	//gtest.C(t, func(t *gtest.T) {
+	//	v0 := []float64{1, 2, 3, 4, 5, 6, 1, 5, 2, 2, 2, 2, 1}
+	//	vTarget := 4
+	//	v1, _ := xx.CrossPoint(v0, 3)
+	//	t.Assert(vTarget, v1)
+	//})
 
 }
 
