@@ -24,6 +24,19 @@ func DefaultSlice[T any](s []T, defaultS []T, notCopy ...int) []T {
 	return defaultS
 }
 
+// EqualSlice Compare two slices to see if they are the same, in the same order and with the same value.
+func EqualSlice[T comparable](a, b []T) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 // First returns the first element of a collection or error if empty.
 func First[T any](s []T) T {
 	if len(s) == 0 {

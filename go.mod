@@ -1,6 +1,6 @@
 module github.com/zut/x
 
-go 1.19
+go 1.21
 
 require (
 	github.com/flytam/filenamify v1.1.2

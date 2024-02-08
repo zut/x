@@ -105,6 +105,7 @@ func ReverseF64(s []float64) []float64 {
 	}
 	return d
 }
+
 func IsPointer(value interface{}) error {
 	k := reflect.ValueOf(value).Kind()
 	if k != reflect.Ptr {
